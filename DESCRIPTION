@@ -1,0 +1,27 @@
+Package: ConAn
+Title: Differential Network Connectivity Analysis
+Version: 1.0.0
+Author:
+    Eric Reed <reeder@bu.edu>,
+    Anthony Federico <anfed@bu.edu>
+Maintainer: Anthony Federico <anfed@bu.edu>
+Description:
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vitae sapien
+    at odio vehicula hendrerit. Curabitur finibus scelerisque ex volutpat
+    rhoncus. Mauris vel arcu placerat dui posuere mattis. Mauris laoreet pretium
+    purus, eu volutpat tellus egestas vel. Quisque ornare eros ut nulla finibus
+    lobortis. Praesent dictum pellentesque est a mattis. Suspendisse id rhoncus
+    purus.
+Depends: R (>= 3.4.3)
+Suggests:
+    BiocGenerics,
+    Biobase,
+    magrittr,
+    parallel,
+    stats,
+    ggplot2,
+    knitr
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
