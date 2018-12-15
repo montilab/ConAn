@@ -1,6 +1,7 @@
 #' @title Differential Connectivity
 #' @description Calculates the differential connectivity between two groups of samples across one or more modules of genes.
 #' @param eset An expression set object
+#' @param mod_list A list of character vectors
 #' @param covariate A string corresponding to column in pData distinguishing sample groups
 #' @param ctrl A string defining control samples
 #' @param cond A string defining condition samples
@@ -25,6 +26,7 @@
 #'
 #' @export
 diff_conn <- function(eset,
+                      mod_list,
                       covariate,
                       ctrl,
                       cond,
