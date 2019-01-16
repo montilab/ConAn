@@ -4,13 +4,16 @@
 \alias{diff_conn}
 \title{Differential Connectivity}
 \usage{
-diff_conn(eset, covariate, ctrl, cond, sim_type = c("bootstrap",
-  "permutation"), iter = 5, mean_correct = F, cores = 1,
-  use_gpu = F, mdc_type = c("frac", "diff"), plotting = F,
-  reporting = F, report_dir = "./data")
+diff_conn(eset, mod_list, covariate, ctrl, cond,
+  sim_type = c("bootstrap", "permutation"), iter = 5,
+  mean_correct = FALSE, cores = 1, use_gpu = FALSE,
+  mdc_type = c("frac", "diff"), plotting = FALSE, reporting = FALSE,
+  report_dir = "./data")
 }
 \arguments{
 \item{eset}{An expression set object}
+
+\item{mod_list}{A list of character vectors}
 
 \item{covariate}{A string corresponding to column in pData distinguishing sample groups}
 
