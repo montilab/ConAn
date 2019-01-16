@@ -4,16 +4,19 @@
 \alias{do_iter}
 \title{Iteration of Random Sampling}
 \usage{
-do_iter(n, mod_list, r_eset, t_eset, sim_type, mean_correct, mdc_type)
+do_iter(n, mod_list, c_eset, r_samples, t_samples, sim_type, mean_correct,
+  mdc_type)
 }
 \arguments{
 \item{n}{An unused placeholder variable}
 
 \item{mod_list}{A list of modules of gene names}
 
-\item{r_eset}{Expression set of control samples}
+\item{c_eset}{Expression set}
 
-\item{t_eset}{Expression set of condition samples}
+\item{r_samples}{Reference samples}
+
+\item{t_samples}{Test samples}
 
 \item{sim_type}{Simulation type can be either c("bootstrap", "permutation")}
 

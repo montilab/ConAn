@@ -144,11 +144,15 @@ diff_conn <- function(eset,
     ############################################
     # Start paralellization
     if (!use_gpu) {
+        c_eset <- BiocGenerics::combine(r_eset, t_eset)
+        r_samples <- Biobase::sampleNames(r_eset)
+        t_samples <- Biobase::sampleNames(t_eset)
         iter_out <- mclapply(seq(iter),
                              do_iter,
                              mod_list = mod_list,
-                             r_eset = r_eset,
-                             t_eset = t_eset,
+                             c_eset = c_eset,
+                             r_samples = r_samples,
+                             t_samples = t_samples,
                              sim_type = sim_type,
                              mean_correct = mean_correct,
                              mdc_type = mdc_type,
