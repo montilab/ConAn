@@ -80,7 +80,7 @@ diff_conn <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_adj %>%
-                   %>% '^'(2)
+                   '^'(2) %>%
                    get_upper_tri(diag=F) %>%
                    .[!is.na(.)]
 
@@ -89,7 +89,7 @@ diff_conn <- function(eset,
 
         # Background connectivity vector
         cv_t_bg <- t_adj %>%
-                   %>% '^'(2)
+                   '^'(2) %>%
                    get_upper_tri(diag=F) %>%
                    .[!is.na(.)]
 
