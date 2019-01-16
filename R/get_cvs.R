@@ -1,5 +1,5 @@
 #' @title Get Connectivity Vectors
-#' @description 
+#' @description
 #' @param mod_genes A character vector of genes within a module
 #' @param r_eset Expression set for the reference samples
 #' @param t_eset Expression set for the test samples
@@ -9,16 +9,16 @@
 #'
 #' @importFrom magrittr %>%
 get_cvs <- function (mod_genes, r_eset, t_eset) {
-  
+
     # Compute normal adjacency matrix
     r_adj <- r_eset[mod_genes,] %>%
              cor_t_exprs() %>%
-             abs()
+             '^'(2)
 
     # Compute normal adjacency matrix
     t_adj <- t_eset[mod_genes,] %>%
              cor_t_exprs() %>%
-             abs()
+             '^'(2)
 
     # Get upper triangle from adjacency matrix
     cv_r <- get_upper_tri(r_adj, diag=F)

@@ -1,5 +1,5 @@
 #' @title Temporary
-#' @description 
+#' @description
 #' @param placeholder A placeholder
 #' @return A return
 #'
@@ -58,13 +58,14 @@ get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
 
     bg_r <- r_adj %>%
             get_upper_tri(diag=F) %>%
-            mean(na.rm=T) %>%
-            abs()
+            '^'(2) %>%
+            mean(na.rm=T)
 
     bg_t <- t_adj %>%
             get_upper_tri(diag=F) %>%
-            mean(na.rm=T) %>%
-            abs()
+            '^'(2) %>%
+            mean(na.rm=T)
+
   } else {
     bg_r <- 0
     bg_t <- 0

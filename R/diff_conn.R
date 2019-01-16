@@ -13,7 +13,7 @@
 #' @param mdc_type Method for calculating difference in connectivity can be either c("frac", "diff")
 #' @param reporting Generate a markdown report for analysis
 #' @param report_dir Directory where report is generated
-#' 
+#'
 #' @return A list of statistics and plots resulting from the analysis
 #'
 #' @importFrom Biobase pData
@@ -80,23 +80,21 @@ diff_conn <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_adj %>%
+                   %>% '^'(2)
                    get_upper_tri(diag=F) %>%
                    .[!is.na(.)]
 
         # Background module connectivity
-        mc_r_bg <- cv_r_bg %>%
-                   mean() %>%
-                   abs()
+        mc_r_bg <- mean(cv_r_bg)
 
         # Background connectivity vector
         cv_t_bg <- t_adj %>%
+                   %>% '^'(2)
                    get_upper_tri(diag=F) %>%
                    .[!is.na(.)]
 
         # Background module connectivity
-        mc_t_bg <- cv_t_bg %>%
-                   mean() %>%
-                   abs()
+        mc_t_bg <- mean(cv_t_bg)
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,

@@ -10,7 +10,7 @@
 genes_novar <- function(r_eset, t_eset) {
     genes <- rownames(r_eset)
     genes.remove <- c()
-    genes.remove <- c(genes.remove, genes[apply(exprs(r_eset), 1, var) == 0])
-    genes.remove <- c(genes.remove, genes[apply(exprs(t_eset), 1, var) == 0])
+    genes.remove <- c(genes.remove, genes[apply(Biobase::exprs(r_eset), 1, var) == 0])
+    genes.remove <- c(genes.remove, genes[apply(Biobase::exprs(t_eset), 1, var) == 0])
     return(genes.remove)
 }
