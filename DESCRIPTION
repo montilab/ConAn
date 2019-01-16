@@ -3,8 +3,11 @@ Title: Differential Network Connectivity Analysis
 Version: 1.0.0
 Author:
     Eric Reed <reeder@bu.edu>,
+    Anthony Federico <anfed@bu.edu>,
+    Stefano Monti <smonti@bu.edu>
+Maintainer: 
+    Eric Reed <reeder@bu.edu>,
     Anthony Federico <anfed@bu.edu>
-Maintainer: Anthony Federico <anfed@bu.edu>
 Description:
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vitae sapien
     at odio vehicula hendrerit. Curabitur finibus scelerisque ex volutpat
