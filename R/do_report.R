@@ -72,9 +72,9 @@ do_report <- function(output, directory) {
     }
     mod_names <- rownames(mdc)
     write.table(mdc, file.path(directory, "mdc.txt"),
-                quote=F,
-                col.names=T,
-                row.names=T,
+                quote=FALSE,
+                col.names=TRUE,
+                row.names=TRUE,
                 sep="\t")
 
     mdc_link <- paste("[Tab-Delimited Table](", "mdc.txt", ")", sep = "")
@@ -83,9 +83,9 @@ do_report <- function(output, directory) {
         bg <- as.data.frame(output$bg[c("mc_r_bg", "mc_t_bg")])
         colnames(bg) <- c("Reference Connectivity", "Test Connectivity")
         write.table(bg, file.path(directory, "bg.txt"),
-                    quote=F,
-                    col.names=T,
-                    row.names=F,
+                    quote=FALSE,
+                    col.names=TRUE,
+                    row.names=FALSE,
                     sep="\t")
         bg_link <- paste("[Tab-Delimited Table](", "bg.txt", ")", sep = "")
     }
@@ -121,6 +121,6 @@ do_report <- function(output, directory) {
     } else {
         writeLines(c(head,style, "### MDC Statistics", mdc_link, " ", mdc_rmd), report_file)
     }
-    rmarkdown::render(report_file, quiet=T)
+    rmarkdown::render(report_file, quiet=TRUE)
     cat("Success: Report is saved as ", file.path(directory, "report.html"))
 }

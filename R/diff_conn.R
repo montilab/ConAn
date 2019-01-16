@@ -32,12 +32,12 @@ diff_conn <- function(eset,
                       cond,
                       sim_type = c("bootstrap", "permutation"),
                       iter = 5,
-                      mean_correct = F,
+                      mean_correct = FALSE,
                       cores = 1,
-                      use_gpu = F,
+                      use_gpu = FALSE,
                       mdc_type = c("frac", "diff"),
-                      plotting = F,
-                      reporting = F,
+                      plotting = FALSE,
+                      reporting = FALSE,
                       report_dir = "./data") {
 
     # Grab multi-optional variables
@@ -80,7 +80,7 @@ diff_conn <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_adj %>%
-                   get_upper_tri(diag=F) %>%
+                   get_upper_tri(diag=FALSE) %>%
                    .[!is.na(.)]
 
         # Background module connectivity
@@ -90,7 +90,7 @@ diff_conn <- function(eset,
 
         # Background connectivity vector
         cv_t_bg <- t_adj %>%
-                   get_upper_tri(diag=F) %>%
+                   get_upper_tri(diag=FALSE) %>%
                    .[!is.na(.)]
 
         # Background module connectivity
@@ -182,13 +182,13 @@ diff_conn <- function(eset,
         mdc_stdev <- apply(iter_mdc, 2, sd)
         m1 <- ifelse(mdc_type == "frac", 1, 0)
         mdc_stat <- (output$stat$mods_mdc_adj - m1) / mdc_stdev
-        mdc_pval <- pnorm(abs(mdc_stat), mean=0, sd=1, lower.tail=F) * 2
+        mdc_pval <- pnorm(abs(mdc_stat), mean=0, sd=1, lower.tail=FALSE) * 2
         mdc_fdr <- p.adjust(mdc_pval, method = "BH")
 
         # Calculate 2 sided p-value for ks
         ks_stdev <- apply(iter_ks, 2, sd)
         ks_stat <- output$stat$mods_ks / ks_stdev
-        ks_pval <- pnorm(abs(ks_stat), mean=0, sd=1, lower.tail=F) * 2
+        ks_pval <- pnorm(abs(ks_stat), mean=0, sd=1, lower.tail=FALSE) * 2
         ks_fdr <- p.adjust(ks_pval, method = "BH")
 
         # Combine stats into a dataframe

@@ -18,9 +18,9 @@ do_sampling <- function(c_eset, r_samples, t_samples, method) {
 
     if (method == "bootstrap") {
         # Sample rerence samples with replacement
-        r_samples <- r_samples[sample(1:r_n, r_n, replace=T)]
+        r_samples <- r_samples[sample(1:r_n, r_n, replace=TRUE)]
         # Sample t samples with replacement
-        t_samples <- t_samples[sample(1:t_n, t_n, replace=T)]
+        t_samples <- t_samples[sample(1:t_n, t_n, replace=TRUE)]
     }
     if (method == "permutation") {
         #Sample rerence samples with replacement

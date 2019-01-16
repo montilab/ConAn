@@ -57,13 +57,13 @@ get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
     }
 
     bg_r <- r_adj %>%
-            get_upper_tri(diag=F) %>%
-            mean(na.rm=T) %>%
+            get_upper_tri(diag=FALSE) %>%
+            mean(na.rm=TRUE) %>%
             abs()
 
     bg_t <- t_adj %>%
-            get_upper_tri(diag=F) %>%
-            mean(na.rm=T) %>%
+            get_upper_tri(diag=FALSE) %>%
+            mean(na.rm=TRUE) %>%
             abs()
   } else {
     bg_r <- 0

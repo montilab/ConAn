@@ -21,8 +21,8 @@ get_cvs <- function (mod_genes, r_eset, t_eset) {
              abs()
 
     # Get upper triangle from adjacency matrix
-    cv_r <- get_upper_tri(r_adj, diag=F)
-    cv_t <- get_upper_tri(t_adj, diag=F)
+    cv_r <- get_upper_tri(r_adj, diag=FALSE)
+    cv_t <- get_upper_tri(t_adj, diag=FALSE)
 
     return(cvs = list(cv_r=cv_r, cv_t=cv_t))
 }
