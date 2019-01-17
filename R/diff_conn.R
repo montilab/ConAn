@@ -13,7 +13,7 @@
 #' @param mdc_type Method for calculating difference in connectivity can be either c("frac", "diff")
 #' @param reporting Generate a markdown report for analysis
 #' @param report_dir Directory where report is generated
-#' 
+#'
 #' @return A list of statistics and plots resulting from the analysis
 #'
 #' @importFrom Biobase pData
@@ -81,22 +81,22 @@ diff_conn <- function(eset,
         # Background connectivity vector
         cv_r_bg <- r_adj %>%
                    get_upper_tri(diag=FALSE) %>%
-                   .[!is.na(.)]
+                   .[!is.na(.)] %>%
+                   atanh()
 
         # Background module connectivity
         mc_r_bg <- cv_r_bg %>%
-                   mean() %>%
-                   abs()
+                   mean()
 
         # Background connectivity vector
         cv_t_bg <- t_adj %>%
                    get_upper_tri(diag=FALSE) %>%
-                   .[!is.na(.)]
+                   .[!is.na(.)]  %>%
+                   atanh()
 
         # Background module connectivity
         mc_t_bg <- cv_t_bg %>%
-                   mean() %>%
-                   abs()
+                   mean()
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
@@ -116,8 +116,8 @@ diff_conn <- function(eset,
 
     mods_cvs <- lapply(mod_list, get_cvs, r_eset, t_eset)
     mods_mcs <- lapply(mods_cvs, lapply_get_mc)
-    mods_mdc_org <- lapply(mods_mcs, lapply_get_mdc, 0, 0, mdc_type)
-    mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc, mc_r_bg, mc_t_bg, mdc_type)
+    mods_mdc_org <- lapply(mods_cvs, lapply_get_mdc, 0, 0, mdc_type)
+    mods_mdc_adj <- lapply(mods_cvs, lapply_get_mdc, mc_r_bg, mc_t_bg, mdc_type)
     mods_ks  <- lapply(mods_cvs, lapply_get_ks)
 
     output$stat <- list(# Reference connvectivity vector for each module

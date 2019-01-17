@@ -1,6 +1,6 @@
 # Get mean connectivity
 get_mc <- function (cv) {
-  return(mean(cv))
+  return(mean(cv^2))
 }
 lapply_get_mc <- function (mod_cvs) {
     return(list(mc_r=get_mc(mod_cvs$cv_r),
@@ -17,19 +17,25 @@ lapply_get_ks <- function (mod_cvs) {
                    mod_cvs$cv_t) )
 }
 
+# Calculate connectivity score
+do_conn <- function(cv, bg){
+    conn <- mean( (cv - bg)^2 )
+    return(conn)
+}
+
 # Get module differential connectivity
-get_mdc <- function (mc_r, mc_t, bg_r=0, bg_t=0, type="frac") {
+get_mdc <- function (cv_r, cv_t, bg_r=0, bg_t=0, type="frac") {
   if (type == "frac") {
-    mdc <- (mc_t - bg_t) / (mc_r - bg_r)
+    mdc <- do_conn(cv_t, bg_t) / do_conn(cv_r, bg_r)
   }
   if (type == "diff") {
-    mdc <- (mc_t - bg_t) - (mc_r - bg_r)
+    mdc <- do_conn(cv_t, bg_t) - do_conn(cv_r, bg_r)
   }
   return(mdc)
 }
-lapply_get_mdc <- function (mod_mcs, bg_r, bg_t, type) {
-  return( get_mdc(mod_mcs$mc_r,
-                  mod_mcs$mc_t,
+lapply_get_mdc <- function (mods_cvs, bg_r, bg_t, type) {
+  return( get_mdc(mods_cvs$cv_r,
+                  mods_cvs$cv_t,
                   bg_r,
                   bg_t,
                   type) )
@@ -51,13 +57,14 @@ get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
 
     bg_r <- r_adj %>%
             get_upper_tri(diag=FALSE) %>%
-            mean(na.rm=TRUE) %>%
-            abs()
+            atanh() %>%
+            mean(na.rm=TRUE)
 
     bg_t <- t_adj %>%
             get_upper_tri(diag=FALSE) %>%
-            mean(na.rm=TRUE) %>%
-            abs()
+            atanh() %>%
+            mean(na.rm=TRUE)
+
   } else {
     bg_r <- 0
     bg_t <- 0
@@ -67,7 +74,7 @@ get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
   mods_cvs <- lapply(mod_list, get_cvs, r_eset, t_eset)
   mods_mcs <- lapply(mods_cvs, lapply_get_mc)
   mods_ks  <- lapply(mods_cvs, lapply_get_ks)
-  mods_mdc <- lapply(mods_mcs, lapply_get_mdc, bg_r, bg_t, mdc_type)
+  mods_mdc <- lapply(mods_cvs, lapply_get_mdc, bg_r, bg_t, mdc_type)
 
   mdc_iter <- list(mods_mdc, mods_ks)
   return(mdc_iter)
