@@ -1,12 +1,4 @@
-#' @title Temporary
-#' @description 
-#' @param placeholder A placeholder
-#' @return A return
-#'
-#' @keywords internal
-#'
-#' @importFrom magrittr %>%
-#' @importFrom stats ks.test
+# Get mean connectivity
 get_mc <- function (cv) {
   return(mean(cv))
 }
@@ -16,6 +8,7 @@ lapply_get_mc <- function (mod_cvs) {
 }
 
 # Get ks score
+#' @importFrom stats ks.test
 get_ks <- function (x, y) {
     return(as.numeric(ks.test(x, y)$statistic))
 }
