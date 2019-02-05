@@ -145,23 +145,48 @@ diff_conn <- function(eset,
     # ------------------------------------------
 
     cat("Estimating p-values using", iter, "iterations. \n")
-
+    
+    c_samples <- rownames(c_edat)
+    r_samples <- rownames(r_edat)
+    t_samples <- rownames(t_edat)
+    
     ############################################
     # Start paralellization
-    if (!use_gpu) {
-        r_samples <- colnames(r_eset)
-        t_samples <- colnames(t_eset)
-        iter_out <- mclapply(seq(iter),
-                             do_iter,
-                             mod_list = mod_list,
-                             c_edat = c_edat,
-                             r_samples = r_samples,
-                             t_samples = t_samples,
-                             sim_type = sim_type,
-                             mean_correct = mean_correct,
-                             mdc_type = mdc_type,
-                             mc.cores = cores)
+    #
+    # 1.
+    # A list of randomly shuffled groups of samples
+    iter_sampling <- mclapply(seq(iter),
+                              do_sampling,
+                              c_samples = c_samples,
+                              r_samples = r_samples,
+                              t_samples = t_samples,
+                              method = sim_type,
+                              mc.cores = cores)
+
+    # 2.
+    # Background connectivity for each iteration
+    if (mean_correct) {
+        iter_background <- mclapply(iter_sampling,
+                                    do_background,
+                                    c_edat = c_edat,
+                                    mod_list = mod_list,
+                                    mc.cores = cores)
+    } else {
+        iter_background <- mclapply(iter_sampling,
+                                    skip_background,
+                                    mc.cores = cores)        
     }
+
+    # 3.
+    # Calculate module connectivity
+    iter_out <- mclapply(iter_background,
+                         get_mods_mdc,
+                         c_edat = c_edat,
+                         mod_list = mod_list,
+                         mdc_type = mdc_type,
+                         mc.cores = cores)
+    #
+    #
     # End paralellization
     ############################################
 

@@ -9,3 +9,12 @@
 get_upper_tri <- function(mat, diag) {
   	mat[upper.tri(mat, diag=diag)]
 }
+
+#' @keywords internal
+#'
+erase_mods <- function(mat, mod_list) {
+    for (i in mod_list) {
+      mat[i,i] <- NA
+    }
+    return(mat)
+}
