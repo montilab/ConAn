@@ -1,6 +1,6 @@
 # Get mean connectivity
 get_mc <- function (cv) {
-  return(mean(cv^2))
+  return(mean( tanh(cv)^2 ))
 }
 lapply_get_mc <- function (mod_cvs) {
     return(list(mc_r=get_mc(mod_cvs$cv_r),
@@ -19,7 +19,7 @@ lapply_get_ks <- function (mod_cvs) {
 
 # Calculate connectivity score
 do_conn <- function(cv, bg){
-    conn <- mean( (cv - bg)^2 )
+    conn <- mean( tanh(cv - bg)^2 )
     return(conn)
 }
 
