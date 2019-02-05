@@ -4,14 +4,14 @@
 \alias{get_cvs}
 \title{Get Connectivity Vectors}
 \usage{
-get_cvs(mod_genes, r_eset, t_eset)
+get_cvs(mod_genes, r_edat, t_edat)
 }
 \arguments{
 \item{mod_genes}{A character vector of genes within a module}
 
-\item{r_eset}{Expression set for the reference samples}
+\item{r_edat}{A sample x gene expression matrix for the reference samples}
 
-\item{t_eset}{Expression set for the test samples}
+\item{t_edat}{A sample x gene expression matrix for the test samples}
 }
 \value{
 A list of connectivity vectors

@@ -54,6 +54,11 @@ diff_conn <- function(eset,
     t_eset <- t_eset[!(rownames(t_eset) %in% genes.remove),]
     cat("Removed", length(genes.remove), "genes with no variance in reference/test subsets...\n")
 
+    # Extract and format expression matrix
+    c_edat <- t(Biobase::exprs(eset)) # A sample x gene expression matrix
+    r_edat <- t(Biobase::exprs(r_eset)) # A sample x gene expression matrix
+    t_edat <- t(Biobase::exprs(t_eset)) # A sample x gene expression matrix
+
     # Store all data in output variable
     output <- list()
     output$info <- list(mod_names = names(mod_list), # List of module names
@@ -70,10 +75,10 @@ diff_conn <- function(eset,
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 
-        r_adj <- cor_t_exprs(r_eset)
-        t_adj <- cor_t_exprs(t_eset)
+        r_adj <- cor(r_edat)
+        t_adj <- cor(t_edat)
 
-        for(i in mod_list) {
+        for (i in mod_list) {
             t_adj[i,i] <- NA
             r_adj[i,i] <- NA
         }
@@ -114,11 +119,11 @@ diff_conn <- function(eset,
 
     cat("Calculating module differential connectivity for", length(names(mod_list)), "clusters...\n")
 
-    mods_cvs <- lapply(mod_list, get_cvs, r_eset, t_eset)
+    mods_cvs <- lapply(mod_list, get_cvs, r_edat, t_edat)
     mods_mcs <- lapply(mods_cvs, lapply_get_mc)
     mods_mdc_org <- lapply(mods_mcs, lapply_get_mdc, 0, 0, mdc_type)
     mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc, mc_r_bg, mc_t_bg, mdc_type)
-    mods_ks  <- lapply(mods_cvs, lapply_get_ks)
+    mods_ks <- lapply(mods_cvs, lapply_get_ks)
 
     output$stat <- list(# Reference connvectivity vector for each module
                         mods_cv_r = do.call(rbind, mods_cvs)[,'cv_r'],
@@ -144,13 +149,12 @@ diff_conn <- function(eset,
     ############################################
     # Start paralellization
     if (!use_gpu) {
-        c_eset <- BiocGenerics::combine(r_eset, t_eset)
-        r_samples <- Biobase::sampleNames(r_eset)
-        t_samples <- Biobase::sampleNames(t_eset)
+        r_samples <- colnames(r_eset)
+        t_samples <- colnames(t_eset)
         iter_out <- mclapply(seq(iter),
                              do_iter,
                              mod_list = mod_list,
-                             c_eset = c_eset,
+                             c_edat = c_edat,
                              r_samples = r_samples,
                              t_samples = t_samples,
                              sim_type = sim_type,

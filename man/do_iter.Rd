@@ -4,7 +4,7 @@
 \alias{do_iter}
 \title{Iteration of Random Sampling}
 \usage{
-do_iter(n, mod_list, c_eset, r_samples, t_samples, sim_type, mean_correct,
+do_iter(n, mod_list, c_edat, r_samples, t_samples, sim_type, mean_correct,
   mdc_type)
 }
 \arguments{
@@ -12,7 +12,7 @@ do_iter(n, mod_list, c_eset, r_samples, t_samples, sim_type, mean_correct,
 
 \item{mod_list}{A list of modules of gene names}
 
-\item{c_eset}{Expression set}
+\item{c_edat}{A sample x gene expression matrix}
 
 \item{r_samples}{Reference samples}
 

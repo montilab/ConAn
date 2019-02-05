@@ -8,8 +8,6 @@
 #'
 #' @export
 plot_mdc <- function(output, mean_correct) {
-    require(ggplot2)
-
     # Extract module connectivity vectors
     cv_r <- output$stat$mods_cv_r
     cv_t <- output$stat$mods_cv_t

@@ -36,12 +36,12 @@ lapply_get_mdc <- function (mod_mcs, bg_r, bg_t, type) {
 }
 
 # Get module differential connectivity for each module
-get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
+get_mods_mdc <- function (mod_list, r_edat, t_edat, mean_correct, mdc_type) {
 
   if (mean_correct) {
     # Compute adjacency matrix
-    r_adj <- cor_t_exprs(r_eset)
-    t_adj <- cor_t_exprs(t_eset)
+    r_adj <- cor(r_edat)
+    t_adj <- cor(t_edat)
 
     # For each gene pair in each module
     for (i in mod_list) {
@@ -51,20 +51,22 @@ get_mods_mdc <- function (mod_list, r_eset, t_eset, mean_correct, mdc_type) {
 
     bg_r <- r_adj %>%
             get_upper_tri(diag=FALSE) %>%
-            mean(na.rm=TRUE) %>%
-            abs()
+            abs() %>%
+            mean(na.rm=TRUE)
+
 
     bg_t <- t_adj %>%
             get_upper_tri(diag=FALSE) %>%
-            mean(na.rm=TRUE) %>%
-            abs()
+            abs() %>%
+            mean(na.rm=TRUE)
+
   } else {
     bg_r <- 0
     bg_t <- 0
   }
 
   # Output for each module
-  mods_cvs <- lapply(mod_list, get_cvs, r_eset, t_eset)
+  mods_cvs <- lapply(mod_list, get_cvs, r_edat, t_edat)
   mods_mcs <- lapply(mods_cvs, lapply_get_mc)
   mods_ks  <- lapply(mods_cvs, lapply_get_ks)
   mods_mdc <- lapply(mods_mcs, lapply_get_mdc, bg_r, bg_t, mdc_type)

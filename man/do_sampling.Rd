@@ -4,10 +4,10 @@
 \alias{do_sampling}
 \title{Randomly Shuffle Samples}
 \usage{
-do_sampling(c_eset, r_samples, t_samples, method)
+do_sampling(c_samples, r_samples, t_samples, method)
 }
 \arguments{
-\item{c_eset}{Combined expression set control and condition samples}
+\item{c_samples}{Combined control and condition sample names}
 
 \item{r_samples}{Control sample names}
 

@@ -1,6 +1,6 @@
 #' @title Randomly Shuffle Samples
 #' @description 
-#' @param c_eset Combined expression set control and condition samples
+#' @param c_samples Combined control and condition sample names
 #' @param r_samples Control sample names
 #' @param t_samples Condition sample names
 #' @param method Sampling method can be either c("bootstrap", "permutation")
@@ -8,10 +8,7 @@
 #' @return Return shuffled samples for reference and test expression sets
 #'
 #' @keywords internal
-#'
-#' @importFrom Biobase sampleNames
-do_sampling <- function(c_eset, r_samples, t_samples, method) {
-    c_samples <- Biobase::sampleNames(c_eset)
+do_sampling <- function(c_samples, r_samples, t_samples, method) {
     c_n <- length(c_samples)
     r_n <- length(r_samples)
     t_n <- length(t_samples)
