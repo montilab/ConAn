@@ -33,23 +33,52 @@ do_sampling <- function(iter_input, c_samples, r_samples, t_samples, method=c("b
     return(iter_output)
 }
 
-do_background <- function(iter_input, c_edat, mod_list) {
+modlist.to.matzindex <- function(modlist, genes) {
+    modlist.index <- lapply(modlist, function(x) {
+        sapply(x, function(y) {
+            match(y, genes)
+        })
+    })
+ 
+    # Create pairwise combinations for each module
+    # Bind into a single dataframe
+    index.pairs <- modlist.index %>%
+                   lapply(function(x) expand.grid(x, x)) %>%
+                   dplyr::bind_rows()
+            
+    # Matrix-like dimension names
+    colnames(index.pairs) <- c("i", "j")
+    
+    # Zero-indexed
+    index.pairs <- index.pairs-1
+    
+    # Matrix is represented as a zero-indexed vector 
+    mat.size <- length(genes)
+    mat.zindex <- index.pairs$i * mat.size + index.pairs$j
+    
+    return(mat.zindex)  
+}
+
+do_background <- function(iter_input, c_edat, mat.zindex) {
 
     # Compute reference background
-    bg_r <- c_edat[iter_input$samples_r,] %>%
-            cor() %>%
-            erase_mods(mod_list=mod_list) %>%
-            get_upper_tri(diag=FALSE) %>%
-            abs() %>%
-            mean(na.rm=TRUE)
+    #bg_r <- c_edat[iter_input$samples_r,] %>%
+    #        cor() %>%
+    #        erase_mods(mod_list=mod_list) %>%
+    #        get_upper_tri(diag=FALSE) %>%
+    #        abs() %>%
+    #        mean(na.rm=TRUE)
 
     # Compute test background
-    bg_t <- c_edat[iter_input$samples_t,] %>%
-            cor() %>%
-            erase_mods(mod_list=mod_list) %>%
-            get_upper_tri(diag=FALSE) %>%
-            abs() %>%
-            mean(na.rm=TRUE)
+    #bg_t <- c_edat[iter_input$samples_t,] %>%
+    #        cor() %>%
+    #        erase_mods(mod_list=mod_list) %>%
+    #        get_upper_tri(diag=FALSE) %>%
+    #        abs() %>%
+    #        mean(na.rm=TRUE)
+
+    bg_r <- bg.connectivity(c_edat[iter_input$samples_r,], mat.zindex)
+    bg_t <- bg.connectivity(c_edat[iter_input$samples_t,], mat.zindex)
 
     iter_output <- list()
     iter_output[['samples_r']] <- iter_input$samples_r
@@ -63,8 +92,8 @@ do_background <- function(iter_input, c_edat, mod_list) {
 skip_background <- function(iter_input) {
 
     iter_output <- list()
-    iter_output[['samples_r']] <- iter_input$r
-    iter_output[['samples_t']] <- iter_input$t
+    iter_output[['samples_r']] <- iter_input$samples_r
+    iter_output[['samples_t']] <- iter_input$samples_t
     iter_output[['bg_r']] <- 0
     iter_output[['bg_t']] <- 0
 

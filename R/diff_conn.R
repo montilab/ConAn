@@ -48,12 +48,6 @@ diff_conn <- function(eset,
     r_eset <- eset[,pData(eset)[,covariate] == ctrl]
     t_eset <- eset[,pData(eset)[,covariate] == cond]
 
-    # Remove genes with no variation within either group
-    genes.remove <- genes_novar(r_eset, t_eset)
-    r_eset <- r_eset[!(rownames(r_eset) %in% genes.remove),]
-    t_eset <- t_eset[!(rownames(t_eset) %in% genes.remove),]
-    cat("Removed", length(genes.remove), "genes with no variance in reference/test subsets...\n")
-
     # Extract and format expression matrix
     c_edat <- t(Biobase::exprs(eset)) # A sample x gene expression matrix
     r_edat <- t(Biobase::exprs(r_eset)) # A sample x gene expression matrix
@@ -68,40 +62,29 @@ diff_conn <- function(eset,
     #    Calculating Background Connectivity
     # ------------------------------------------
 
-    # Calculate background mdc [Expensive]
-    # 2x 25000x25000 (e.g. RNA-seq Experiments)
-    # ~ 5G each matrix in memory
-    # gpuCOR would be good here
+    # Calculate background mdc
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 
-        r_adj <- cor(r_edat)
-        t_adj <- cor(t_edat)
-
-        for (i in mod_list) {
-            t_adj[i,i] <- NA
-            r_adj[i,i] <- NA
-        }
-
         # Background connectivity vector
-        cv_r_bg <- r_adj %>%
+        cv_r_bg <- r_edat %>%
+                   cor.fast() %>%
+                   erase_mods(mod_list=mod_list) %>%
                    get_upper_tri(diag=FALSE) %>%
-                   .[!is.na(.)]
-
-        # Background module connectivity
-        mc_r_bg <- cv_r_bg %>%
-                   mean() %>%
                    abs()
 
+        # Background module connectivity
+        mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
+
         # Background connectivity vector
-        cv_t_bg <- t_adj %>%
+        cv_t_bg <- t_edat %>%
+                   cor.fast() %>%
+                   erase_mods(mod_list=mod_list) %>%
                    get_upper_tri(diag=FALSE) %>%
-                   .[!is.na(.)]
+                   abs()
 
         # Background module connectivity
-        mc_t_bg <- cv_t_bg %>%
-                   mean() %>%
-                   abs()
+        mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
@@ -166,11 +149,14 @@ diff_conn <- function(eset,
     # 2.
     # Background connectivity for each iteration
     if (mean_correct) {
-        iter_background <- mclapply(iter_sampling,
+
+        genes <- colnames(c_edat)
+        mat.zindex <- modlist.to.matzindex(mod_list, genes)
+
+        iter_background <- lapply(iter_sampling,
                                     do_background,
                                     c_edat = c_edat,
-                                    mod_list = mod_list,
-                                    mc.cores = cores)
+                                    mat.zindex = mat.zindex)
     } else {
         iter_background <- mclapply(iter_sampling,
                                     skip_background,
@@ -254,7 +240,7 @@ diff_conn <- function(eset,
                             quant <- test(x[length(x)])
                             return(apply(cbind(quant, 1-quant+(1/length(x))), 1, min)*2)
                         }
-        )
+                    )
         ks_fdr <- p.adjust(ks_pval, method = "BH")
 
         # Combine stats into a dataframe

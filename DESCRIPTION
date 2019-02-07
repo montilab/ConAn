@@ -1,6 +1,6 @@
 Package: ConAn
 Title: Differential Network Connectivity Analysis
-Version: 1.0.0
+Version: 0.99.0
 Author:
     Eric Reed <reeder@bu.edu>,
     Anthony Federico <anfed@bu.edu>,
@@ -24,6 +24,8 @@ Suggests:
     stats,
     ggplot2,
     knitr
+LinkingTo: Rcpp
+NeedsCompilation: yes
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

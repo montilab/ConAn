@@ -1,6 +1,6 @@
 # Get mean connectivity
 get_mc <- function (cv) {
-  return(mean(cv))
+  return(mean(cv, na.rm=TRUE))
 }
 lapply_get_mc <- function (mod_cvs) {
     return(list(mc_r=get_mc(mod_cvs$cv_r),
