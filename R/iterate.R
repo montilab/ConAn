@@ -70,9 +70,8 @@ get_mods_mdc <- function (iter_input, c_edat, mod_list, mdc_type) {
     # Output for each module
     mods_cvs <- lapply(mod_list, get_cvs, r_edat, t_edat)
     mods_mcs <- lapply(mods_cvs, lapply_get_mc)
-    mods_ks  <- lapply(mods_cvs, lapply_get_ks)
     mods_mdc <- lapply(mods_mcs, lapply_get_mdc, bg_r, bg_t, mdc_type)
 
-    iter_output <- list(mods_mdc, mods_ks)
+    iter_output <- list(mods_mdc)
     return(iter_output)
 }

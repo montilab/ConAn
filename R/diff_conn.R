@@ -108,7 +108,6 @@ diff_conn <- function(eset,
     mods_mcs <- lapply(mods_cvs, lapply_get_mc)
     mods_mdc_org <- lapply(mods_mcs, lapply_get_mdc, 0, 0, mdc_type)
     mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc, mc_r_bg, mc_t_bg, mdc_type)
-    mods_ks <- lapply(mods_cvs, lapply_get_ks)
 
     output$stat <- list(# Reference connvectivity vector for each module
                         mods_cv_r = do.call(rbind, mods_cvs)[,'cv_r'],
@@ -121,9 +120,7 @@ diff_conn <- function(eset,
                         # Module differential connectivity for each module
                         mods_mdc_org = unlist(mods_mdc_org),
                         # Adjusted module differential connectivity for each module
-                        mods_mdc_adj = unlist(mods_mdc_adj),
-                        # Ks score for each module
-                        mods_ks = unlist(mods_ks))
+                        mods_mdc_adj = unlist(mods_mdc_adj))
 
     # ------------------------------------------
     #  Permutation-based Significance Testing
@@ -149,21 +146,21 @@ diff_conn <- function(eset,
     if (mean_correct) {
 
         iter_background <- lapply(iter_sampling,
-                                    do_background,
-                                    c_edat = c_edat,
-                                    mat.zindex = mat.zindex)
+                                  do_background,
+                                  c_edat = c_edat,
+                                  mat.zindex = mat.zindex)
     } else {
         iter_background <- lapply(iter_sampling,
-                                    skip_background) 
+                                  skip_background) 
     }
 
     # 3.
     # Calculate module connectivity
     iter_out <- lapply(iter_background,
-                         get_mods_mdc,
-                         c_edat = c_edat,
-                         mod_list = mod_list,
-                         mdc_type = mdc_type)
+                       get_mods_mdc,
+                       c_edat = c_edat,
+                       mod_list = mod_list,
+                       mdc_type = mdc_type)
     #
     #
     # End paralellization
@@ -178,12 +175,6 @@ diff_conn <- function(eset,
                 matrix(nrow=length(names(mod_list))) %>%
                 t()
 
-    # For iter for module -> ks statistic
-    iter_ks <- rbind_iter_out[,2] %>%
-               unlist() %>%
-               matrix(nrow=length(names(mod_list))) %>%
-               t()
-
     # ------------------------------------------
     #           Calculate Significance
     # ------------------------------------------
@@ -197,21 +188,11 @@ diff_conn <- function(eset,
         mdc_pval <- pnorm(abs(mdc_stat), mean=0, sd=1, lower.tail=FALSE) * 2
         mdc_fdr <- p.adjust(mdc_pval, method = "BH")
 
-        # Calculate 2 sided p-value for ks
-        ks_stdev <- apply(iter_ks, 2, sd)
-        ks_stat <- output$stat$mods_ks / ks_stdev
-        ks_pval <- pnorm(abs(ks_stat), mean=0, sd=1, lower.tail=FALSE) * 2
-        ks_fdr <- p.adjust(ks_pval, method = "BH")
-
         # Combine stats into a dataframe
         output$iter <- data.frame(mdc_stat = mdc_stat,
                                   mdc_stdev = mdc_stdev,
                                   mdc_pval = mdc_pval,
-                                  mdc_fdr = mdc_fdr,
-                                  ks_stat = ks_stat,
-                                  ks_stdev = ks_stdev,
-                                  ks_pval = ks_pval,
-                                  ks_fdr = ks_fdr)
+                                  mdc_fdr = mdc_fdr)
     }
 
     if (sim_type == "permutation") {
@@ -226,21 +207,9 @@ diff_conn <- function(eset,
                     )
         mdc_fdr <- p.adjust(mdc_pval, method = "BH")
 
-        # Calculate 2 sided p-value for ks
-        iter_ks <- rbind(iter_ks, output$stat$mods_ks) # Prevent p-value = zero
-        ks_pval <- apply(iter_ks, 2, function(x){
-                            test <- ecdf(x)
-                            quant <- test(x[length(x)])
-                            return(apply(cbind(quant, 1-quant+(1/length(x))), 1, min)*2)
-                        }
-                    )
-        ks_fdr <- p.adjust(ks_pval, method = "BH")
-
         # Combine stats into a dataframe
         output$iter <- data.frame(mdc_pval = mdc_pval,
-                                  mdc_fdr = mdc_fdr,
-                                  ks_pval = ks_pval,
-                                  ks_fdr = ks_fdr)
+                                  mdc_fdr = mdc_fdr)
     }
 
     # ------------------------------------------

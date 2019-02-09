@@ -7,16 +7,6 @@ lapply_get_mc <- function (mod_cvs) {
                 mc_t=get_mc(mod_cvs$cv_t)))
 }
 
-# Get ks score
-#' @importFrom stats ks.test
-get_ks <- function (x, y) {
-    return(as.numeric(ks.test(x, y)$statistic))
-}
-lapply_get_ks <- function (mod_cvs) {
-    return( get_ks(mod_cvs$cv_r,
-                   mod_cvs$cv_t) )
-}
-
 # Get module differential connectivity
 get_mdc <- function (mc_r, mc_t, bg_r=0, bg_t=0, type="frac") {
   if (type == "frac") {
