@@ -81,6 +81,14 @@ SEXP S_pcor(SEXP R_x) {
     return wrap(pcor(m));
 }
 
+// Background Mean Connectivity Wrapper
+SEXP S_erase_vals(SEXP R_x, SEXP R_ix) {
+    NumericMatrix x(R_x);
+    arma::mat m = Rcpp::as<arma::mat>(x);
+    NumericVector ix(R_ix);
+    return wrap(erase_vals(m, ix));
+}
+
 // Mean Connectivity Wrapper
 SEXP S_cv(SEXP R_x) {
     NumericMatrix x(R_x);

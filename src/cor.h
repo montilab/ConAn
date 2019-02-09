@@ -14,6 +14,7 @@ using namespace std;
 
 // Functions to export to R
 RcppExport SEXP S_pcor(SEXP R_x);
+RcppExport SEXP S_erase_vals(SEXP R_x, SEXP R_ix);
 RcppExport SEXP S_cv(SEXP R_x);
 RcppExport SEXP S_bgcv(SEXP R_x, SEXP R_ix);
 RcppExport SEXP S_mc(SEXP R_x);
@@ -21,7 +22,7 @@ RcppExport SEXP S_bgmc(SEXP R_x, SEXP R_ix);
 
 // Functions to be used within C++
 mat pcor(mat x);
-mat erase_vals(mat x);
+mat erase_vals(mat x, NumericVector ix);
 
 NumericVector extract_cv(mat x);
 NumericVector cv(mat x);

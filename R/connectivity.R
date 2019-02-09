@@ -32,6 +32,12 @@ pcor <- function(x) {
 
 #' @import Rcpp
 #' @useDynLib ConAn
+erase_vals <- function(x, ix) {
+    .Call("S_erase_vals", R_x=x,  R_ix=ix, PACKAGE="ConAn")
+}
+
+#' @import Rcpp
+#' @useDynLib ConAn
 cv <- function(x) {
     .Call("S_cv", R_x=x, PACKAGE="ConAn")
 }

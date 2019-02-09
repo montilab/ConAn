@@ -17,11 +17,8 @@ Description:
 Depends: R (>= 3.4.3)
 Suggests:
     BiocGenerics,
-    Biobase,
-    magrittr,
     parallel,
     stats,
-    ggplot2,
     knitr
 LinkingTo: Rcpp (>= 0.11.0), RcppArmadillo (>= 0.4.100.0)
 NeedsCompilation: yes
