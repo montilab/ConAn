@@ -44,14 +44,15 @@ diff_conn <- function(eset,
     sim_type <- match.arg(sim_type)
     mdc_type <- match.arg(mdc_type)
 
-    # Create separate expression sets for each condition
-    r_eset <- eset[,pData(eset)[,covariate] == ctrl]
-    t_eset <- eset[,pData(eset)[,covariate] == cond]
+    pdat <- pData(eset)  
+    c_samples <- rownames(pdat)
+    r_samples <- c_samples[(pdat[,covariate] == ctrl)]
+    t_samples <- c_samples[(pdat[,covariate] == cond)]
 
     # Extract and format expression matrix
     c_edat <- t(Biobase::exprs(eset)) # A sample x gene expression matrix
-    r_edat <- t(Biobase::exprs(r_eset)) # A sample x gene expression matrix
-    t_edat <- t(Biobase::exprs(t_eset)) # A sample x gene expression matrix
+    r_edat <- c_edat[r_samples,]
+    t_edat <- c_edat[t_samples,]
 
     # Genes
     genes <- colnames(c_edat)
@@ -129,10 +130,6 @@ diff_conn <- function(eset,
     # ------------------------------------------
 
     cat("Estimating p-values using", iter, "iterations. \n")
-    
-    c_samples <- rownames(c_edat)
-    r_samples <- rownames(r_edat)
-    t_samples <- rownames(t_edat)
     
     ############################################
     # Start paralellization
