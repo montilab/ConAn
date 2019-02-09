@@ -53,6 +53,9 @@ diff_conn <- function(eset,
     r_edat <- t(Biobase::exprs(r_eset)) # A sample x gene expression matrix
     t_edat <- t(Biobase::exprs(t_eset)) # A sample x gene expression matrix
 
+    # Genes
+    genes <- colnames(c_edat)
+
     # Store all data in output variable
     output <- list()
     output$info <- list(mod_names = names(mod_list), # List of module names
@@ -66,25 +69,23 @@ diff_conn <- function(eset,
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 
+        mat.zindex <- modlist.to.matzindex(mod_list, genes)
+
         # Background connectivity vector
         cv_r_bg <- r_edat %>%
-                   cor.fast() %>%
-                   erase_mods(mod_list=mod_list) %>%
-                   get_upper_tri(diag=FALSE) %>%
-                   abs()
+                   bgcv(mat.zindex)
 
         # Background module connectivity
-        mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
+        mc_r_bg <- cv_r_bg %>%
+                   mean()
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>%
-                   cor.fast() %>%
-                   erase_mods(mod_list=mod_list) %>%
-                   get_upper_tri(diag=FALSE) %>%
-                   abs()
+                   bgcv(mat.zindex)
 
         # Background module connectivity
-        mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
+        mc_t_bg <- cv_t_bg %>%
+                   mean()
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
@@ -150,27 +151,22 @@ diff_conn <- function(eset,
     # Background connectivity for each iteration
     if (mean_correct) {
 
-        genes <- colnames(c_edat)
-        mat.zindex <- modlist.to.matzindex(mod_list, genes)
-
         iter_background <- lapply(iter_sampling,
                                     do_background,
                                     c_edat = c_edat,
                                     mat.zindex = mat.zindex)
     } else {
-        iter_background <- mclapply(iter_sampling,
-                                    skip_background,
-                                    mc.cores = cores)        
+        iter_background <- lapply(iter_sampling,
+                                    skip_background) 
     }
 
     # 3.
     # Calculate module connectivity
-    iter_out <- mclapply(iter_background,
+    iter_out <- lapply(iter_background,
                          get_mods_mdc,
                          c_edat = c_edat,
                          mod_list = mod_list,
-                         mdc_type = mdc_type,
-                         mc.cores = cores)
+                         mdc_type = mdc_type)
     #
     #
     # End paralellization
@@ -187,9 +183,9 @@ diff_conn <- function(eset,
 
     # For iter for module -> ks statistic
     iter_ks <- rbind_iter_out[,2] %>%
-                unlist() %>%
-                matrix(nrow=length(names(mod_list))) %>%
-                t()
+               unlist() %>%
+               matrix(nrow=length(names(mod_list))) %>%
+               t()
 
     # ------------------------------------------
     #           Calculate Significance

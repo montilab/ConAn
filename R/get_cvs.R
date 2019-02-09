@@ -12,15 +12,11 @@ get_cvs <- function (mod_genes, r_edat, t_edat) {
 
     # Compute normal adjacency matrix
     cv_r <- r_edat[,mod_genes] %>%
-            cor() %>%
-            get_upper_tri(diag=FALSE) %>%
-            abs()
+            cv()
 
     # Compute normal adjacency matrix
     cv_t <- t_edat[,mod_genes] %>%
-            cor() %>%
-            get_upper_tri(diag=FALSE) %>%
-            abs()
+            cv()
 
     return(cvs = list(cv_r=cv_r, cv_t=cv_t))
 }
