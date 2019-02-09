@@ -11,7 +11,7 @@ mat erase_vals(mat x, NumericVector ix) {
     for (int i = 0; i < len; i++) { 
          x[ix[i]] = R_NaN;
     }
-	return x;
+    return x;
 }
 
 // Extract Connectivity Vector
@@ -42,12 +42,12 @@ double mean_cv(mat x) {
             }
         }
     }
-	return usum/nval;
+    return usum/nval;
 }
 
 // Pearson Correlation
 mat pcor(mat x) {
-	return cor(x);
+    return cor(x);
 }
 
 // Connectivity Vector
@@ -57,17 +57,17 @@ NumericVector cv(mat x) {
 
 // Background Connectivity Vector
 NumericVector bgcv(mat x, NumericVector ix) {
-	return extract_cv(erase_vals(cor(x), ix));
+    return extract_cv(erase_vals(cor(x), ix));
 }
 
 // Mean Connectivity
 double mc(mat x) {
-	return mean_cv(cor(x));
+    return mean_cv(cor(x));
 }
 
 // Background mean connectivity
 double bgmc(mat x, NumericVector ix) {
-	return mean_cv(erase_vals(cor(x), ix));
+    return mean_cv(erase_vals(cor(x), ix));
 }
 
 //
