@@ -8,18 +8,21 @@ Author:
 Maintainer: 
     Anthony Federico <anfed@bu.edu>
 Description:
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vitae sapien
-    at odio vehicula hendrerit. Curabitur finibus scelerisque ex volutpat
-    rhoncus. Mauris vel arcu placerat dui posuere mattis. Mauris laoreet pretium
-    purus, eu volutpat tellus egestas vel. Quisque ornare eros ut nulla finibus
-    lobortis. Praesent dictum pellentesque est a mattis. Suspendisse id rhoncus
-    purus.
+    A package to measure differential connectivity of multiple networks between two conditions with visualization and robust statistical testing.
 Depends: R (>= 3.4.3)
+Imports: 
+    Biobase,
+    Rcpp,
+    magrittr,
+    ggplot2,
+    rmarkdown,
+    dplyr
 Suggests:
     BiocGenerics,
     parallel,
     stats,
-    knitr
+    knitr,
+    testthat
 LinkingTo: Rcpp (>= 0.11.0), RcppArmadillo (>= 0.4.100.0)
 NeedsCompilation: yes
 License: GPL-3 + file LICENSE

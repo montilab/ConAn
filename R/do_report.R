@@ -29,6 +29,7 @@ columns$permutation <- c("Gene Size",
 #' @param placeholder A placeholder
 #' @return A return
 #'
+#' @import rmarkdown
 #' @importFrom magrittr %>%
 #'
 #' @export
