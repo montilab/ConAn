@@ -172,14 +172,9 @@ diff_conn <- function(eset,
     # 2.
     # Background connectivity for each iteration
     if (mean_correct) {
-
-        iter_background <- lapply(iter_sampling,
-                                  do_background,
-                                  c_edat = c_edat,
-                                  mat.zindex = mat.zindex)
+        iter_background <- lapply(iter_sampling, do_background, c_edat = c_edat,  mat.zindex = mat.zindex)
     } else {
-        iter_background <- lapply(iter_sampling,
-                                  skip_background) 
+        iter_background <- lapply(iter_sampling, skip_background) 
     }
 
     # 3.

@@ -5,15 +5,13 @@
 #' @return A vector for values.
 #'
 #' @keywords internal
-#'
 get_lower_tri <- function(mat, diag) {
   	mat[lower.tri(mat, diag=diag)]
 }
 
 #' @keywords internal
 remove_na <- function(v) {
-    v <- v[!is.na(v)]
-    return(v)
+    v[!is.na(v)]
 }
 
 #' @keywords internal
@@ -25,7 +23,7 @@ erase_mods <- function(mat, mod_list) {
 }
 
 #' @importFrom dplyr bind_rows
-#' @export
+#' @keywords internal
 modlist.to.matzindex <- function(modlist, genes) {
     modlist.index <- lapply(modlist, function(x) {
         sapply(x, function(y) {

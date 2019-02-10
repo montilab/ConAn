@@ -8,11 +8,7 @@ columns$bootstrap <- c("Gene Size",
                        "MDC Stat",
                        "MDC Stdev",
                        "MDC P-Val",
-                       "MDC FDR",
-                       "KS Stat",
-                       "KS Stdev",
-                       "KS P-Val",
-                       "KS FDR")
+                       "MDC FDR")
 
 columns$permutation <- c("Gene Size",
                          "Reference Connectivity",
@@ -20,9 +16,7 @@ columns$permutation <- c("Gene Size",
                          "MDC Unadusted",
                          "MDC Adjusted",
                          "MDC P-Val",
-                         "MDC FDR",
-                         "KS P-Val",
-                         "KS FDR")
+                         "MDC FDR")
 
 #' @title Temporary
 #' @description 
@@ -66,7 +60,7 @@ do_report <- function(output, directory) {
                                                   "mods_mdc_adj")]))
     mdc <- cbind(mdc, output$iter)
 
-    if (ncol(mdc) == 9) {
+    if (ncol(mdc) == 7) {
         colnames(mdc) <- columns$permutation
     } else {
         colnames(mdc) <- columns$bootstrap

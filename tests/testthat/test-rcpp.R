@@ -2,7 +2,7 @@
 ncols = 1000
 nrows = 500 
 set.seed(1)
-edat <- matrix(runif(ncols*nrows), ncol=ncols) 
+edat <- matrix(runif(ncols*nrows), ncol=ncols)
 
 genes <- c(1:ncols)
 modlist <- list("a"=c(854,709,829,592,356,13,266,144,497,174),
@@ -54,11 +54,11 @@ test_that("Connectivity vector is working", {
 test_that("Background connectivity vector is working", {
     
     bgcv.1 <- edat %>%
-            stats::cor() %>%
-            erase_mods(mod_list=modlist) %>%
-            get_lower_tri(diag=FALSE) %>%
-            remove_na() %>%
-            atanh()
+              stats::cor() %>%
+              erase_mods(mod_list=modlist) %>%
+              get_lower_tri(diag=FALSE) %>%
+              remove_na() %>%
+              atanh()
     
     bgcv.2 <- ConAn::bgcv(edat, matz)
    
@@ -70,7 +70,7 @@ test_that("Mean connectivity is working", {
     mc.1 <- edat %>%
             stats::cor() %>%
             get_lower_tri(diag=FALSE) %>%
-            abs() %>%
+            atanh() %>%
             mean()
     
     mc.2 <- ConAn::mc(edat)
@@ -85,7 +85,7 @@ test_that("Background mean connectivity is working", {
               erase_mods(mod_list=modlist) %>%
               get_lower_tri(diag=FALSE) %>%
               remove_na() %>%
-              abs() %>%
+              atanh() %>%
               mean()
     
     bgmc.2 <- ConAn::bgmc(edat, matz)
@@ -93,3 +93,31 @@ test_that("Background mean connectivity is working", {
     expect_equal(bgmc.1, bgmc.2)
 })
 
+test_that("Modular differential connectivity is", {
+    
+    edat.r <- matrix(runif(ncols*nrows), ncol=ncols) 
+    edat.t <- matrix(runif(ncols*nrows), ncol=ncols)     
+    
+    bg.r <- 0.035
+    bg.t <- 0.025
+    
+    cv.r <- edat.r %>%
+            stats::cor() %>%
+            get_lower_tri(diag=FALSE) %>%
+            atanh()    
+    
+    cv.t <- edat.t %>%
+            stats::cor() %>%
+            get_lower_tri(diag=FALSE) %>%
+            atanh()
+    
+    mc.r <- mean( tanh(cv.r - bg.r)^2 )
+    mc.t <- mean( tanh(cv.t - bg.t)^2 )
+    
+    # Fraction
+    mdc.1 <- mc.t/mc.r
+    
+    mdc.2 <- .Call("S_mdc", R_xr=edat.r, R_xt=edat.t, R_bgr=bg.r, R_bgt=bg.t, PACKAGE="ConAn")
+
+    expect_equal(mdc.1, mdc.2)
+})

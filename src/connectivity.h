@@ -1,5 +1,5 @@
-#ifndef _ConAn_COR_H
-#define _ConAn_COR_H
+#ifndef _ConAn_CONNECTIVITY_H
+#define _ConAn_CONNECTIVITY_H
 
 #define ARMA_NO_DEBUG
 
@@ -29,7 +29,6 @@ NumericVector extract_cv(mat x);
 NumericVector cv(mat x);
 NumericVector bgcv(mat x, NumericVector ix);
 
-double mean_cv(mat x);
 double mc(mat x);
 double bgmc(mat x, NumericVector ix);
 
