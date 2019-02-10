@@ -104,10 +104,38 @@ diff_conn <- function(eset,
 
     cat("Calculating module differential connectivity for", length(names(mod_list)), "clusters...\n")
 
-    mods_cvs <- lapply(mod_list, get_cvs, r_edat, t_edat)
-    mods_mcs <- lapply(mods_cvs, lapply_get_mc)
-    mods_mdc_org <- lapply(mods_mcs, lapply_get_mdc, 0, 0, mdc_type)
-    mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc, mc_r_bg, mc_t_bg, mdc_type)
+    # Lambda helper functions
+    l_cvs <- function (mod_genes, r_edat, t_edat) {
+        cv_r <- r_edat[,mod_genes] %>% cv()
+        cv_t <- t_edat[,mod_genes] %>% cv()
+        return(cvs = list(cv_r=cv_r, cv_t=cv_t))
+    }
+
+    # Module connectivity vectors
+    mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat)
+
+    # Module connectivity means
+    mods_mcs <- lapply(mods_cvs, function(x) {
+      return(list(mc_r = mean( tanh( x$cv_r )^2 ),
+                  mc_t = mean( tanh( x$cv_t )^2 )))
+    })
+
+    l_mc <- function(cv, bg) {
+        return( mean( tanh(cv - bg)^2 ) )
+    }
+    l_mdc <- function (cv_r, cv_t, bg_r, bg_t) {
+        if (mdc_type == "frac") { return(l_mc(cv_t, bg_t) / l_mc(cv_r, bg_r)) }
+        if (mdc_type == "diff") { return(l_mc(cv_t, bg_t) - l_mc(cv_r, bg_r)) }
+    }
+    lapply_get_mdc <- function (mods_cvs, bg_r=0, bg_t=0) {
+        return(l_mdc(mods_cvs$cv_r, mods_cvs$cv_t, bg_r, bg_t))
+    }
+
+    # Original module differential connectivity 
+    mods_mdc_org <- lapply(mods_cvs, lapply_get_mdc)
+    
+    # Adjusted module differential connectivity 
+    mods_mdc_adj <- lapply(mods_cvs, lapply_get_mdc, mc_r_bg, mc_t_bg)
 
     output$stat <- list(# Reference connvectivity vector for each module
                         mods_cv_r = do.call(rbind, mods_cvs)[,'cv_r'],
@@ -161,6 +189,7 @@ diff_conn <- function(eset,
                        c_edat = c_edat,
                        mod_list = mod_list,
                        mdc_type = mdc_type)
+    
     #
     #
     # End paralellization

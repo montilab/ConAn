@@ -19,6 +19,7 @@ RcppExport SEXP S_cv(SEXP R_x);
 RcppExport SEXP S_bgcv(SEXP R_x, SEXP R_ix);
 RcppExport SEXP S_mc(SEXP R_x);
 RcppExport SEXP S_bgmc(SEXP R_x, SEXP R_ix);
+RcppExport SEXP S_mdc(SEXP R_xr, SEXP R_xt, SEXP R_bgr, SEXP R_bgt);
 
 // Functions to be used within C++
 mat pcor(mat x);

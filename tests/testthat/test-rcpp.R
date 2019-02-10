@@ -44,7 +44,7 @@ test_that("Connectivity vector is working", {
     cv.1 <- edat %>%
             stats::cor() %>%
             get_lower_tri(diag=FALSE) %>%
-            abs()
+            atanh()
     
     cv.2 <- ConAn::cv(edat)
    
@@ -58,7 +58,7 @@ test_that("Background connectivity vector is working", {
             erase_mods(mod_list=modlist) %>%
             get_lower_tri(diag=FALSE) %>%
             remove_na() %>%
-            abs()
+            atanh()
     
     bgcv.2 <- ConAn::bgcv(edat, matz)
    

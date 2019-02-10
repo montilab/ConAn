@@ -58,8 +58,18 @@ skip_background <- function(iter_input) {
     return(iter_output)
 }
 
+#' @import Rcpp
+#' @useDynLib ConAn
+#' @export
+get_mdc <- function(mod_genes, r_edat, t_edat, bg_r, bg_t, mdc_type) {
+    xr <- r_edat[,mod_genes]
+    xt <- t_edat[,mod_genes]
+    mdc <- .Call("S_mdc", R_xr=xr, R_xt=xt, R_bgr=bg_r, R_bgt=bg_t, PACKAGE="ConAn")
+    return(mdc)
+}
+
 # Get module differential connectivity for each module
-get_mods_mdc <- function (iter_input, c_edat, mod_list, mdc_type) {
+get_mods_mdc <- function(iter_input, c_edat, mod_list, mdc_type) {
 
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
@@ -67,10 +77,7 @@ get_mods_mdc <- function (iter_input, c_edat, mod_list, mdc_type) {
     bg_r <- iter_input$bg_r
     bg_t <- iter_input$bg_t
 
-    # Output for each module
-    mods_cvs <- lapply(mod_list, get_cvs, r_edat, t_edat)
-    mods_mcs <- lapply(mods_cvs, lapply_get_mc)
-    mods_mdc <- lapply(mods_mcs, lapply_get_mdc, bg_r, bg_t, mdc_type)
+    mods_mdc <- lapply(mod_list, get_mdc, r_edat, t_edat, bg_r, bg_t, mdc_type)
 
     iter_output <- list(mods_mdc)
     return(iter_output)

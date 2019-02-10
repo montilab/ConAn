@@ -1,31 +1,3 @@
-#' @importFrom dplyr bind_rows
-#' @export
-modlist.to.matzindex <- function(modlist, genes) {
-    modlist.index <- lapply(modlist, function(x) {
-        sapply(x, function(y) {
-            match(y, genes)
-        })
-    })
- 
-    # Create pairwise combinations for each module
-    # Bind into a single dataframe
-    index.pairs <- modlist.index %>%
-                   lapply(function(x) expand.grid(x, x)) %>%
-                   dplyr::bind_rows()
-            
-    # Matrix-like dimension names
-    colnames(index.pairs) <- c("i", "j")
-    
-    # Zero-indexed
-    index.pairs <- index.pairs-1
-    
-    # Matrix is represented as a zero-indexed vector 
-    mat.size <- length(genes)
-    mat.zindex <- index.pairs$i * mat.size + index.pairs$j
-
-    return(mat.zindex)  
-}
-
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export

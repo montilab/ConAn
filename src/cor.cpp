@@ -22,7 +22,7 @@ NumericVector extract_cv(mat x) {
     for (int i = 0; i < n; i++) {
         for (int j = i+1; j < n; j++) {
             if (!ISNAN(x[i*n+j])) {
-                v[ix] = abs(x[i*n+j]); ix++;
+                v[ix] = atanh(x[i*n+j]); ix++;
             }
         }
     }
@@ -68,6 +68,35 @@ double mc(mat x) {
 // Background mean connectivity
 double bgmc(mat x, NumericVector ix) {
     return mean_cv(erase_vals(cor(x), ix));
+}
+
+// Module connectivity minus background
+double mc_mbg(mat x, double bg) {
+    return mean( mean ( square( tanh( cor(x) - bg ) ) ) );
+}
+
+// Module differential connectivity
+double mdc(mat xr, mat xt, double bgr, double bgt) {
+    double cxr = mc_mbg(xr, bgr);
+    double cxt = mc_mbg(xt, bgt);
+
+    double dc = cxr/cxt;
+
+    return dc;
+}
+
+// Module Differential Connectivity
+SEXP S_mdc(SEXP R_xr, SEXP R_xt, SEXP R_bgr, SEXP R_bgt) {
+    NumericMatrix xr(R_xr);
+    arma::mat mr = Rcpp::as<arma::mat>(xr);
+
+    NumericMatrix xt(R_xt);
+    arma::mat mt = Rcpp::as<arma::mat>(xt);
+
+    double bgr = as<double>(R_bgr);
+    double bgt = as<double>(R_bgt);
+
+    return wrap(mdc(mr, mt, bgr, bgt));
 }
 
 //
