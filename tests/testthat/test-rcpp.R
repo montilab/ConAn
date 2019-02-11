@@ -17,8 +17,22 @@ matz <- modlist.to.matzindex(modlist, genes)
 test_that("Pearson correlation is working", {
 
     # Pearson correlation matrix
-    cmat.1 <- stats::cor(edat, method="pearson")
+    cmat.1 <- stats::cor(edat)
     cmat.2 <- ConAn::pcor(edat)
+    
+    expect_equal(cmat.1, cmat.2)
+})
+
+test_that("Pearson correlation can handle difficult matrices", {
+
+    m.1 <- matrix(c(2,4,4,5,2,4,5,6,8,5,4,3,5,6,7,5,4,4,3,2,2), ncol=7)
+    
+    # Columns with no variance
+    m.2 <- m.1
+    m.2[,1] <- c(1,1,1)
+    m.2[,4] <- c(0,0,0)
+    cmat.1 <- suppressWarnings(stats::cor(m.2, use="pairwise.complete.obs"))
+    cmat.2 <- ConAn::pcor(m.2)
     
     expect_equal(cmat.1, cmat.2)
 })
@@ -63,19 +77,6 @@ test_that("Background connectivity vector is working", {
     bgcv.2 <- ConAn::bgcv(edat, matz)
    
     expect_equal(bgcv.1, bgcv.2)
-})
-
-test_that("Mean connectivity is working", {
-    
-    mc.1 <- edat %>%
-            stats::cor() %>%
-            get_lower_tri(diag=FALSE) %>%
-            atanh() %>%
-            mean()
-    
-    mc.2 <- ConAn::mc(edat)
-   
-    expect_equal(mc.1, mc.2)
 })
 
 test_that("Background mean connectivity is working", {
