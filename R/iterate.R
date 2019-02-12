@@ -35,8 +35,8 @@ do_sampling <- function(iter_input, c_samples, r_samples, t_samples, method=c("b
 
 do_background <- function(iter_input, c_edat, mat.zindex) {
 
-    bg_r <- C_mean_atanh_lower_tri_erase_mods_pcor(c_edat[iter_input$samples_r,], mat.zindex)
-    bg_t <- C_mean_atanh_lower_tri_erase_mods_pcor(c_edat[iter_input$samples_t,], mat.zindex)
+    bg_r <- mean_atanh_lower_tri_erase_mods_pcor(c_edat[iter_input$samples_r,], mat.zindex)
+    bg_t <- mean_atanh_lower_tri_erase_mods_pcor(c_edat[iter_input$samples_t,], mat.zindex)
 
     iter_output <- list()
     iter_output[['samples_r']] <- iter_input$samples_r
@@ -67,8 +67,11 @@ do_differential_connectivity <- function(iter_input, c_edat, mod_list, mdc_type)
     bg_r <- iter_input$bg_r
     bg_t <- iter_input$bg_t
 
+    if (mdc_type == "frac") {type = 1}
+    if (mdc_type == "diff") {type = 2}
+
     mods_mdc <- lapply(mod_list, function(mod_genes) {
-        return(C_modular_differential_connectivity(r_edat[,mod_genes], t_edat[,mod_genes], bg_r, bg_t, mdc_type))
+        return(modular_differential_connectivity(r_edat[,mod_genes], t_edat[,mod_genes], bg_r, bg_t, type))
     })
 
     iter_output <- list(mods_mdc)

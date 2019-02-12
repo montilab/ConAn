@@ -73,13 +73,13 @@ diff_conn <- function(eset,
         mat.zindex <- modlist.to.matzindex(mod_list, genes)
 
         # Background connectivity vector
-        cv_r_bg <- C_atanh_lower_tri_erase_mods_pcor(r_edat, mat.zindex)
+        cv_r_bg <- atanh_lower_tri_erase_mods_pcor(r_edat, mat.zindex)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg)
 
         # Background connectivity vector
-        cv_t_bg <- C_atanh_lower_tri_erase_mods_pcor(t_edat, mat.zindex)
+        cv_t_bg <- atanh_lower_tri_erase_mods_pcor(t_edat, mat.zindex)
 
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg)
@@ -102,8 +102,8 @@ diff_conn <- function(eset,
 
     # Lambda helper functions
     l_cvs <- function (mod_genes, r_edat, t_edat) {
-        cv_r <- r_edat[,mod_genes] %>% C_bg_corrected_atanh_lower_tri_pcor(mc_r_bg)
-        cv_t <- t_edat[,mod_genes] %>% C_bg_corrected_atanh_lower_tri_pcor(mc_t_bg)
+        cv_r <- r_edat[,mod_genes] %>% bg_corrected_atanh_lower_tri_pcor(mc_r_bg)
+        cv_t <- t_edat[,mod_genes] %>% bg_corrected_atanh_lower_tri_pcor(mc_t_bg)
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
@@ -155,19 +155,19 @@ diff_conn <- function(eset,
     # 2.
     # Background connectivity for each iteration
     if (mean_correct) {
-        iter_background <- lapply(iter_sampling, do_background, c_edat = c_edat,  mat.zindex = mat.zindex)
+        iter_background <- mclapply(iter_sampling, do_background, c_edat = c_edat,  mat.zindex = mat.zindex, mc.cores = cores)
     } else {
-        iter_background <- lapply(iter_sampling, skip_background) 
+        iter_background <- mclapply(iter_sampling, skip_background, mc.cores = cores) 
     }
     
     # 3.
     # Calculate differential module connectivity
-    iter_out <- lapply(iter_background,
+    iter_out <- mclapply(iter_background,
                        do_differential_connectivity,
                        c_edat = c_edat,
                        mod_list = mod_list,
-                       mdc_type = mdc_type)
-    
+                       mdc_type = mdc_type,
+                       mc.cores = cores)
     #
     #
     # End paralellization

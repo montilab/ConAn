@@ -20,7 +20,7 @@ subtract_bg <- function(mat, bg) {
 }
 
 #' @keywords internal
-erase_mods <- function(mat, mod_list) {
+erase_mod_list <- function(mat, mod_list) {
     for (i in mod_list) {
       mat[i,i] <- NA
     }
