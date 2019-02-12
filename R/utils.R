@@ -5,13 +5,18 @@
 #' @return A vector for values.
 #'
 #' @keywords internal
-get_lower_tri <- function(mat, diag) {
+lower_tri <- function(mat, diag) {
   	mat[lower.tri(mat, diag=diag)]
 }
 
 #' @keywords internal
 remove_na <- function(v) {
     v[!is.na(v)]
+}
+
+#' @keywords internal
+subtract_bg <- function(mat, bg) {
+    mat-bg
 }
 
 #' @keywords internal

@@ -1,44 +1,57 @@
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-pcor <- function(x) {
+C_pcor <- function(x) {
     .Call("S_pcor", R_x=x, PACKAGE="ConAn")
 }
 
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-erase_vals <- function(x, ix) {
-    .Call("S_erase_vals", R_x=x,  R_ix=ix, PACKAGE="ConAn")
+C_erase_mods <- function(x, ix) {
+    .Call("S_erase_mods", R_x=x,  R_ix=ix, PACKAGE="ConAn")
 }
 
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-cv <- function(x) {
-    .Call("S_cv", R_x=x, PACKAGE="ConAn")
+C_atanh_lower_tri_pcor <- function(x) {
+    .Call("S_atanh_lower_tri_pcor", R_x=x, PACKAGE="ConAn")
 }
 
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-bgcv <- function(x, ix) {
-    v <- .Call("S_bgcv", R_x=x, R_ix=ix, PACKAGE="ConAn")
-    v <- v[v != 0]
-    return(v)
+C_atanh_lower_tri_erase_mods_pcor <- function(x, ix) {
+    .Call("S_atanh_lower_tri_erase_mods_pcor", R_x=x, R_ix=ix, PACKAGE="ConAn")
 }
 
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-mc <- function(x) {
-    .Call("S_mc", R_x=x, PACKAGE="ConAn")
+C_mean_atanh_lower_tri_erase_mods_pcor <- function(x, ix) {
+    .Call("S_mean_atanh_lower_tri_erase_mods_pcor", R_x=x, R_ix=ix, PACKAGE="ConAn")
 }
 
 #' @import Rcpp
 #' @useDynLib ConAn
 #' @export
-bgmc <- function(x, ix) {
-    .Call("S_bgmc", R_x=x, R_ix=ix, PACKAGE="ConAn")
+C_bg_corrected_atanh_lower_tri_pcor <- function(x, bg) {
+    .Call("S_bg_corrected_atanh_lower_tri_pcor", R_x=x, R_bg=bg, PACKAGE="ConAn")
+}
 
+#' @import Rcpp
+#' @useDynLib ConAn
+#' @export
+C_mean_bg_corrected_atanh_lower_tri_pcor <- function(x, bg) {
+    .Call("S_mean_bg_corrected_atanh_lower_tri_pcor", R_x=x, R_bg=bg, PACKAGE="ConAn")
+}
+
+#' @import Rcpp
+#' @useDynLib ConAn
+#' @export
+C_modular_differential_connectivity <- function(xr, xt, bgr, bgt, type) {
+    if (type == "frac") {type = 1}
+    if (type == "diff") {type = 2}
+    .Call("S_modular_differential_connectivity", R_xr=xr, R_xt=xt, R_bgr=bgr, R_bgt=bgt, R_type=type, PACKAGE="ConAn")
 }

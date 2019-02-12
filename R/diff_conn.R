@@ -73,20 +73,16 @@ diff_conn <- function(eset,
         mat.zindex <- modlist.to.matzindex(mod_list, genes)
 
         # Background connectivity vector
-        cv_r_bg <- r_edat %>%
-                   bgcv(mat.zindex)
+        cv_r_bg <- C_atanh_lower_tri_erase_mods_pcor(r_edat, mat.zindex)
 
         # Background module connectivity
-        mc_r_bg <- cv_r_bg %>%
-                   mean()
+        mc_r_bg <- mean(cv_r_bg)
 
         # Background connectivity vector
-        cv_t_bg <- t_edat %>%
-                   bgcv(mat.zindex)
+        cv_t_bg <- C_atanh_lower_tri_erase_mods_pcor(t_edat, mat.zindex)
 
         # Background module connectivity
-        mc_t_bg <- cv_t_bg %>%
-                   mean()
+        mc_t_bg <- mean(cv_t_bg)
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
@@ -106,36 +102,25 @@ diff_conn <- function(eset,
 
     # Lambda helper functions
     l_cvs <- function (mod_genes, r_edat, t_edat) {
-        cv_r <- r_edat[,mod_genes] %>% cv()
-        cv_t <- t_edat[,mod_genes] %>% cv()
+        cv_r <- r_edat[,mod_genes] %>% C_bg_corrected_atanh_lower_tri_pcor(mc_r_bg)
+        cv_t <- t_edat[,mod_genes] %>% C_bg_corrected_atanh_lower_tri_pcor(mc_t_bg)
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
-    # Module connectivity vectors
+    # Background-corrected modular connectivity vectors
     mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat)
 
-    # Module connectivity means
+    # Background-corrected modular connectivity
     mods_mcs <- lapply(mods_cvs, function(x) {
       return(list(mc_r = mean( tanh( x$cv_r )^2 ),
                   mc_t = mean( tanh( x$cv_t )^2 )))
     })
-
-    l_mc <- function(cv, bg) {
-        return( mean( tanh(cv - bg)^2 ) )
+    lapply_get_mdc <- function (mods_mcs) {
+        if (mdc_type == "frac") { return(mods_mcs$mc_t / mods_mcs$mc_r) }
+        if (mdc_type == "diff") { return(mods_mcs$mc_t - mods_mcs$mc_r) }
     }
-    l_mdc <- function (cv_r, cv_t, bg_r, bg_t) {
-        if (mdc_type == "frac") { return(l_mc(cv_t, bg_t) / l_mc(cv_r, bg_r)) }
-        if (mdc_type == "diff") { return(l_mc(cv_t, bg_t) - l_mc(cv_r, bg_r)) }
-    }
-    lapply_get_mdc <- function (mods_cvs, bg_r=0, bg_t=0) {
-        return(l_mdc(mods_cvs$cv_r, mods_cvs$cv_t, bg_r, bg_t))
-    }
-
-    # Original module differential connectivity 
-    mods_mdc_org <- lapply(mods_cvs, lapply_get_mdc)
-    
     # Adjusted module differential connectivity 
-    mods_mdc_adj <- lapply(mods_cvs, lapply_get_mdc, mc_r_bg, mc_t_bg)
+    mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc)
 
     output$stat <- list(# Reference connvectivity vector for each module
                         mods_cv_r = do.call(rbind, mods_cvs)[,'cv_r'],
@@ -145,8 +130,6 @@ diff_conn <- function(eset,
                         mods_mc_r = unlist(do.call(rbind, mods_mcs)[,'mc_r']),
                         # Test module connectivity for eacj module
                         mods_mc_t = unlist(do.call(rbind, mods_mcs)[,'mc_t']),
-                        # Module differential connectivity for each module
-                        mods_mdc_org = unlist(mods_mdc_org),
                         # Adjusted module differential connectivity for each module
                         mods_mdc_adj = unlist(mods_mdc_adj))
 
@@ -176,11 +159,11 @@ diff_conn <- function(eset,
     } else {
         iter_background <- lapply(iter_sampling, skip_background) 
     }
-
+    
     # 3.
-    # Calculate module connectivity
+    # Calculate differential module connectivity
     iter_out <- lapply(iter_background,
-                       get_mods_mdc,
+                       do_differential_connectivity,
                        c_edat = c_edat,
                        mod_list = mod_list,
                        mdc_type = mdc_type)
@@ -242,7 +225,7 @@ diff_conn <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
-        output$plots <- plot_mdc(output, mean_correct)
+        output$plots <- do_plot(output, mean_correct)
     }
     if (reporting) {
         cat("Generating report...\n")

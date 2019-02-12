@@ -16,12 +16,12 @@ Imports:
     magrittr,
     ggplot2,
     rmarkdown,
-    dplyr
+    dplyr,
+    knitr
 Suggests:
     BiocGenerics,
     parallel,
     stats,
-    knitr,
     testthat
 LinkingTo: Rcpp (>= 0.11.0), RcppArmadillo (>= 0.4.100.0)
 NeedsCompilation: yes

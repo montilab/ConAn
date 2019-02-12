@@ -14,22 +14,23 @@ using namespace std;
 
 // Functions to export to R
 RcppExport SEXP S_pcor(SEXP R_x);
-RcppExport SEXP S_erase_vals(SEXP R_x, SEXP R_ix);
-RcppExport SEXP S_cv(SEXP R_x);
-RcppExport SEXP S_bgcv(SEXP R_x, SEXP R_ix);
-RcppExport SEXP S_mc(SEXP R_x);
-RcppExport SEXP S_bgmc(SEXP R_x, SEXP R_ix);
-RcppExport SEXP S_mdc(SEXP R_xr, SEXP R_xt, SEXP R_bgr, SEXP R_bgt);
+RcppExport SEXP S_erase_mods(SEXP R_x, SEXP R_ix);
+RcppExport SEXP S_atanh_lower_tri_pcor(SEXP R_x);
+RcppExport SEXP S_atanh_lower_tri_erase_mods_pcor(SEXP R_x, SEXP R_ix);
+RcppExport SEXP S_mean_atanh_lower_tri_erase_mods_pcor(SEXP R_x, SEXP R_ix);
+RcppExport SEXP S_bg_corrected_atanh_lower_tri_pcor(SEXP R_x, SEXP R_bg);
+RcppExport SEXP S_mean_bg_corrected_atanh_lower_tri_pcor(SEXP R_x, SEXP R_bg);
+RcppExport SEXP S_modular_differential_connectivity(SEXP R_xr, SEXP R_xt, SEXP R_bgr, SEXP R_bgt, SEXP R_type);
 
 // Functions to be used within C++
-mat pcor(mat x);
-mat erase_vals(mat x, NumericVector ix);
-
-NumericVector extract_cv(mat x);
-NumericVector cv(mat x);
-NumericVector bgcv(mat x, NumericVector ix);
-
-double mc(mat x);
-double bgmc(mat x, NumericVector ix);
+mat           pcor(const mat& x);
+mat           erase_mods(mat x, const NumericVector& ix);
+NumericVector atanh_lower_tri(const mat& x);
+NumericVector atanh_lower_tri_pcor(const mat& x);
+NumericVector atanh_lower_tri_erase_mods_pcor(const mat& x, const NumericVector& ix);
+NumericVector bg_corrected_atanh_lower_tri_pcor(const mat& x, const double& bg);
+double        mean_atanh_lower_tri_erase_mods_pcor(const mat& x, const NumericVector& ix);
+double        mean_bg_corrected_atanh_lower_tri_pcor(const mat& x, const double& bg);
+double        modular_differential_connectivity(const mat& xr, const mat& xt, const double& bgr, const double& bgt, const int &type);
 
 #endif

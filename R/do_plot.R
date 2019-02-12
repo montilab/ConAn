@@ -7,7 +7,7 @@
 #' @import ggplot2
 #'
 #' @export
-plot_mdc <- function(output, mean_correct) {
+do_plot <- function(output, mean_correct) {
     # Extract module connectivity vectors
     cv_r <- output$stat$mods_cv_r
     cv_t <- output$stat$mods_cv_t

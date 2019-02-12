@@ -3,7 +3,6 @@ columns <- list()
 columns$bootstrap <- c("Gene Size",
                        "Reference Connectivity",
                        "Test Connectivity",
-                       "MDC Unadusted",
                        "MDC Adjusted",
                        "MDC Stat",
                        "MDC Stdev",
@@ -13,7 +12,6 @@ columns$bootstrap <- c("Gene Size",
 columns$permutation <- c("Gene Size",
                          "Reference Connectivity",
                          "Test Connectivity",
-                         "MDC Unadusted",
                          "MDC Adjusted",
                          "MDC P-Val",
                          "MDC FDR")
@@ -24,11 +22,11 @@ columns$permutation <- c("Gene Size",
 #' @return A return
 #'
 #' @import rmarkdown
+#' @import knitr
 #' @importFrom magrittr %>%
 #'
 #' @export
 do_report <- function(output, directory) {
-    require(knitr)
 
     # Create main directory if not exists
     if (!file.exists(directory)) {
@@ -56,11 +54,10 @@ do_report <- function(output, directory) {
 
     mdc <- cbind(mdc, as.data.frame(output$stat[c("mods_mc_r",
                                                   "mods_mc_t",
-                                                  "mods_mdc_org",
                                                   "mods_mdc_adj")]))
     mdc <- cbind(mdc, output$iter)
 
-    if (ncol(mdc) == 7) {
+    if (ncol(mdc) == 6) {
         colnames(mdc) <- columns$permutation
     } else {
         colnames(mdc) <- columns$bootstrap
