@@ -20,6 +20,7 @@ mod_list <- ConAn::mod_list
 
 # Run ConAn
 output <- ConAn::diff_conn(eset,
+                           mod_list,
                            covariate = "subtype",
                            ctrl = "LumA",
                            cond = "Basal",
