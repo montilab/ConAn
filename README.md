@@ -4,10 +4,7 @@ Differential Network Connectivity Analysis
 ### Install with devtools
 ```R
 library(devtools)
-devtools::install_github("montilab/ConAn", auth=<Personal Access Token>)
-
-# For help with generating Personal Access Tokens
-# https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+devtools::install_github("montilab/ConAn")
 ```
 
 ### Run ConAn
