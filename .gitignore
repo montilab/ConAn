@@ -1,4 +1,6 @@
 dev/*
+simulations/*
+report/*
 
 # General
 .DS_Store

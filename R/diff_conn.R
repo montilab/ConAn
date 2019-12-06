@@ -70,16 +70,24 @@ diff_conn <- function(eset,
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 
-        mat.zindex <- modlist.to.matzindex(mod_list, genes)
-
         # Background connectivity vector
-        cv_r_bg <- atanh_lower_tri_erase_mods_pcor(r_edat, mat.zindex)
+        cv_r_bg <- r_edat %>%
+                   stats::cor() %>%
+                   erase_mod_list(mod_list=mod_list) %>%
+                   lower_tri(diag=FALSE) %>%
+                   remove_na() %>%
+                   atanh()
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg)
 
         # Background connectivity vector
-        cv_t_bg <- atanh_lower_tri_erase_mods_pcor(t_edat, mat.zindex)
+        cv_t_bg <- t_edat %>%
+                   stats::cor() %>%
+                   erase_mod_list(mod_list=mod_list) %>%
+                   lower_tri(diag=FALSE) %>%
+                   remove_na() %>%
+                   atanh()
 
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg)
@@ -102,8 +110,20 @@ diff_conn <- function(eset,
 
     # Lambda helper functions
     l_cvs <- function (mod_genes, r_edat, t_edat) {
-        cv_r <- r_edat[,mod_genes] %>% bg_corrected_atanh_lower_tri_pcor(mc_r_bg)
-        cv_t <- t_edat[,mod_genes] %>% bg_corrected_atanh_lower_tri_pcor(mc_t_bg)
+        cv_r <- r_edat[,mod_genes] %>% 
+                stats::cor() %>%
+                lower_tri(diag=FALSE) %>%
+                remove_na() %>%
+                atanh() %>%
+                subtract_bg(mc_r_bg)
+
+        cv_t <- t_edat[,mod_genes] %>% 
+                stats::cor() %>%
+                lower_tri(diag=FALSE) %>%
+                remove_na() %>%
+                atanh() %>%
+                subtract_bg(mc_t_bg)
+
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
@@ -112,8 +132,8 @@ diff_conn <- function(eset,
 
     # Background-corrected modular connectivity
     mods_mcs <- lapply(mods_cvs, function(x) {
-      return(list(mc_r = mean( tanh( x$cv_r )^2 ),
-                  mc_t = mean( tanh( x$cv_t )^2 )))
+        return(list(mc_r = mean( tanh( x$cv_r )^2 ),
+                    mc_t = mean( tanh( x$cv_t )^2 )))
     })
     lapply_get_mdc <- function (mods_mcs) {
         if (mdc_type == "frac") { return(mods_mcs$mc_t / mods_mcs$mc_r) }
@@ -155,19 +175,19 @@ diff_conn <- function(eset,
     # 2.
     # Background connectivity for each iteration
     if (mean_correct) {
-        iter_background <- mclapply(iter_sampling, do_background, c_edat = c_edat,  mat.zindex = mat.zindex, mc.cores = cores)
+        iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mod_list=mod_list, mc.cores=cores)
     } else {
-        iter_background <- mclapply(iter_sampling, skip_background, mc.cores = cores) 
+        iter_background <- mclapply(iter_sampling, skip_background, mc.cores=cores)
     }
     
     # 3.
     # Calculate differential module connectivity
     iter_out <- mclapply(iter_background,
-                       do_differential_connectivity,
-                       c_edat = c_edat,
-                       mod_list = mod_list,
-                       mdc_type = mdc_type,
-                       mc.cores = cores)
+                         do_differential_connectivity,
+                         c_edat = c_edat,
+                         mod_list = mod_list,
+                         mdc_type = mdc_type,
+                         mc.cores = cores)
     #
     #
     # End paralellization

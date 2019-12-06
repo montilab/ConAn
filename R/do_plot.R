@@ -1,5 +1,4 @@
 #' @title Plot Module Differential Connectivity
-#' @description 
 #' @param output Output of diff_conn
 #' @param mean_correct Logical. Was mean correct used in diff_conn?
 #' @return A list of ggplots

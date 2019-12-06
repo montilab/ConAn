@@ -17,8 +17,6 @@ columns$permutation <- c("Gene Size",
                          "MDC FDR")
 
 #' @title Temporary
-#' @description 
-#' @param placeholder A placeholder
 #' @return A return
 #'
 #' @import rmarkdown

@@ -6,9 +6,6 @@
 \usage{
 do_report(output, directory)
 }
-\arguments{
-\item{placeholder}{A placeholder}
-}
 \value{
 A return
 }
