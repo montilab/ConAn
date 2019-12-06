@@ -20,8 +20,13 @@ subtract_bg <- function(mat, bg) {
 }
 
 #' @keywords internal
-erase_mod_list <- function(mat, mod_list) {
-    for (i in mod_list) {
+square <- function(x) {
+    x^2
+}
+
+#' @keywords internal
+erase_mods <- function(mat, mods) {
+    for (i in mods) {
       mat[i,i] <- NA
     }
     return(mat)
