@@ -4,7 +4,7 @@
 \alias{do_sampling}
 \title{Randomly Shuffle Samples}
 \usage{
-do_sampling(iter_input, c_samples, r_samples, t_samples,
+do_sampling(iter, c_samples, r_samples, t_samples,
   method = c("bootstrap", "permutation"))
 }
 \arguments{

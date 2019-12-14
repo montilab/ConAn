@@ -1,30 +1,11 @@
-#' Format a string using placeholders
-#'
-#' @param string A an unformatted string with placeholders
-#' @param ... Variables to format placeholders with
-#' @return A formatted string
-#' 
-#' @examples
-#' \dontrun{
-#' format_str("Format with {1} and {2}", "x", "y")
-#' }
-#'
-#' @keywords internal
-format_str <- function(string, ...) {
-    args <- list(...)
-    for (i in 1:length(args)) {
-        pattern <- paste("\\{", i, "}", sep="")
-        replacement <- args[[i]]
-        string <- gsub(pattern, replacement, string)
-    }
-    return(string)
-}
-
 #' @import magrittr
 #' @import ggpubr
 #' @import kableExtra
 #' @keywords internal
 report <- function(output) {
+
+  r_name <- output$args$ctrl
+  t_name <- output$args$cond
 
   mdc <- as.data.frame(output$data$mod_n)
 
@@ -35,8 +16,8 @@ report <- function(output) {
 
   if (output$args$sim_type == "bootstrap") {
       colnames(mdc) <- c("Gene Size",
-                         "Reference Connectivity",
-                         "Test Connectivity",
+                         paste(r_name, "Connectivity"),
+                         paste(t_name, "Connectivity"),
                          "MDC",
                          "Stat",
                          "Stdev",
@@ -44,8 +25,8 @@ report <- function(output) {
                          "FDR")
   } else {
       colnames(mdc) <- c("Gene Size",
-                         "Reference Connectivity",
-                         "Test Connectivity",
+                         paste(r_name, "Connectivity"),
+                         paste(t_name, "Connectivity"),
                          "MDC",
                          "P-Value",
                          "FDR")
@@ -86,8 +67,8 @@ options(scipen=1, digits=3)
 ***
 
 # Background Statistics
-**Reference Background**: `r output$bg$mc_r_bg`  
-**Test Background**: `r output$bg$mc_t_bg`  
+**`r output$args$ctrl` Background**: `r output$bg$mc_r_bg`  
+**`r output$args$cond` Background**: `r output$bg$mc_t_bg`  
 
 ***
 "

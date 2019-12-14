@@ -26,9 +26,9 @@ conan(eset, mod_list, covariate, ctrl, cond, sim_type = c("bootstrap",
 
 \item{mean_correct}{Correct with background connectivity}
 
-\item{cores}{Number of CPU cores available for parallelization}
+\item{cores}{Number of cores available for parallelization}
 
-\item{mdc_type}{Method for calculating difference in connectivity can be either c("frac", "diff")}
+\item{mdc_type}{Method for calculating difference in connectivity can be either c("fraction", "difference")}
 
 \item{reporting}{Generate a markdown report for analysis}
 
