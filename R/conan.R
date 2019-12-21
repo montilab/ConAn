@@ -46,6 +46,20 @@ conan <- function(eset,
     if (is.null(names(mod_list))) stop("Modules must be a named list")
     if (!covariate %in% colnames(pData(eset))) stop("Covariate must be a column in the eset pData")
 
+    eset_genes <- unique(unlist(rownames(eset)))
+    missing <- length(setdiff(unique(unlist(mod_list)), eset_genes))
+
+    # Matching module genes to eset genes
+    if (missing > 0) cat(paste("Missing", missing, "module genes from eset...\n"))
+    mod_list <- lapply(mod_list, function(x) {
+        x[x %in% eset_genes]
+    })
+
+    # Ensure each module has at least two genes
+    mod_list <- mod_list[ unlist(lapply(mod_list, function(x) length(x) >= 2)) ]
+
+    print(mod_list)
+
     # Data parsing
     pdat <- pData(eset)  
     c_samples <- rownames(pdat)
@@ -95,14 +109,14 @@ conan <- function(eset,
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
-        mc_r_bg <- mean(cv_r_bg)
+        mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>% 
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
-        mc_t_bg <- mean(cv_t_bg)
+        mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
@@ -136,8 +150,8 @@ conan <- function(eset,
 
     # Background-corrected modular connectivity
     mods_mcs <- lapply(mods_cvs, function(x) {
-        return(list(mc_r = mean( tanh( x$cv_r )^2 ),
-                    mc_t = mean( tanh( x$cv_t )^2 )))
+        return(list(mc_r = mean( tanh( x$cv_r )^2, na.rm=TRUE ),
+                    mc_t = mean( tanh( x$cv_t )^2, na.rm=TRUE )))
     })
     lapply_get_mdc <- function (mods_mcs) {
         if (mdc_type == "fraction") { return(mods_mcs$mc_t / mods_mcs$mc_r) }

@@ -63,11 +63,11 @@ iter_differential_connectivity <- function(iter,
         
         bg_r <- c_edat[iter$samples_r,] %>%
                 atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                mean()
+                mean(na.rm=TRUE)
 
         bg_t <- c_edat[iter$samples_t,] %>%
                 atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                mean()
+                mean(na.rm=TRUE)
 
     } else {
         bg_r <- 0
@@ -94,11 +94,11 @@ do_background <- function(iter, c_edat, mods, mean_correct) {
         
         iter[['bg_r']] <- c_edat[iter$samples_r,] %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          mean()
+                          mean(na.rm=TRUE)
 
         iter[['bg_t']] <- c_edat[iter$samples_t,] %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          mean()
+                          mean(na.rm=TRUE)
 
     } else {
         iter[['bg_r']] <- 0

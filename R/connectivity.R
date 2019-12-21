@@ -17,7 +17,7 @@ bg_corrected_atanh_lower_tri_cor <- function(edat, bg) {
 #' @keywords internal
 atanh_lower_tri_erase_mods_cor <- function(edat, mods) {
     edat %>%
-    cor() %>%
+    stats::cor(method="pearson") %>%
     erase_mods(mods=mods) %>%
     lower_tri(diag=FALSE) %>%
     remove_na() %>%
@@ -30,12 +30,12 @@ modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_ty
     mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, bg_r) %>%
             tanh() %>%
             square() %>%
-            mean() 
+            mean(na.rm=TRUE) 
 
     mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, bg_t) %>%
             tanh() %>%
             square() %>%
-            mean()
+            mean(na.rm=TRUE)
 
     if (mdc_type == "fraction") { 
         return(mc_t / mc_r)
