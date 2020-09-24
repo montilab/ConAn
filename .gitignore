@@ -1,5 +1,4 @@
-dev/*
-simulations/*
+dev/debugging.R
 report/*
 
 # General
