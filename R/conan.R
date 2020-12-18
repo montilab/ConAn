@@ -19,6 +19,9 @@
 #' @import magrittr
 #' @import stats 
 #' @import parallel
+#' @import bigcor
+#' @import ffbase
+#' @import ff
 #'
 #' @export
 conan <- function(eset,

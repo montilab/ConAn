@@ -6,7 +6,7 @@
 #'
 #' @keywords internal
 lower_tri <- function(mat, diag) {
-  	mat[lower.tri(mat, diag=diag)]
+  as.ff(mat[c(lower.tri(mat,diag=diag))])
 }
 
 #' @keywords internal
