@@ -1,10 +1,10 @@
 #' @keywords internal
 atanh_lower_tri_cor <- function(edat) {
     edat %>%
-    stats::cor(method="pearson") %>%
-    lower_tri(diag=FALSE) %>%
-    remove_na() %>%
-    atanh()
+        bigcor(size = dim(edat)[2]) %>%
+        lower_tri(diag=FALSE) %>%
+        remove_na() %>%
+        atanh()
 }
 
 #' @keywords internal
@@ -17,11 +17,11 @@ bg_corrected_atanh_lower_tri_cor <- function(edat, bg) {
 #' @keywords internal
 atanh_lower_tri_erase_mods_cor <- function(edat, mods) {
     edat %>%
-    stats::cor(method="pearson") %>%
-    erase_mods(mods=mods) %>%
-    lower_tri(diag=FALSE) %>%
-    remove_na() %>%
-    atanh()
+        bigcor(size = dim(edat)[2]) %>%
+        erase_mods(mods=mods) %>%
+        lower_tri(diag=FALSE) %>%
+        remove_na() %>%
+        atanh()
 }
 
 #' @keywords internal
