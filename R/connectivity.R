@@ -1,3 +1,6 @@
+#' @import bigcor
+#' @import ffbase
+
 #' @keywords internal
 atanh_lower_tri_cor <- function(edat) {
     edat %>%
