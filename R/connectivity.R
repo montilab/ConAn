@@ -2,29 +2,47 @@
 #' @import ffbase
 
 #' @keywords internal
-atanh_lower_tri_cor <- function(edat) {
-    edat %>%
-        bigcor(size = dim(edat)[2]) %>%
-        lower_tri(diag=FALSE) %>%
-        remove_na() %>%
-        atanh()
+atanh_lower_tri_cor <- function(edat, bigcor_on) {
+    if (bigcor_on){
+        edat %>%
+            bigcor(size = dim(edat)[2]) %>%
+            lower_tri(diag=FALSE,bigcor_on) %>%
+            remove_na() %>%
+            atanh()
+    } else {
+        edat %>%
+            stats::cor(method="pearson") %>%
+            lower_tri(diag=FALSE,bigcor_on) %>%
+            remove_na() %>%
+            atanh()
+    }
 }
 
 #' @keywords internal
-bg_corrected_atanh_lower_tri_cor <- function(edat, bg) {
+bg_corrected_atanh_lower_tri_cor <- function(edat, bg, bigcor_on) {
     edat %>%
-    atanh_lower_tri_cor() %>%
+    atanh_lower_tri_cor(bigcor_on) %>%
     subtract_bg(bg)
 }
 
 #' @keywords internal
-atanh_lower_tri_erase_mods_cor <- function(edat, mods) {
-    edat %>%
-        bigcor(size = dim(edat)[2]) %>%
-        erase_mods(mods=mods) %>%
-        lower_tri(diag=FALSE) %>%
-        remove_na() %>%
-        atanh()
+atanh_lower_tri_erase_mods_cor <- function(edat, mods, bigcor_on) {
+    if (bigcor_on){
+        edat %>%
+            bigcor(size = dim(edat)[2]) %>%
+            erase_mods(mods=mods) %>%
+            lower_tri(diag=FALSE, bigcor_on) %>%
+            remove_na() %>%
+            atanh()
+    } else {
+        edat %>%
+            stats::cor(method="pearson") %>%
+            erase_mods(mods=mods) %>%
+            lower_tri(diag=FALSE,bigcor_on) %>%
+            remove_na() %>%
+            atanh()
+    }
+    
 }
 
 #' @keywords internal

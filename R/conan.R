@@ -12,7 +12,8 @@
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
 #' @param report_dir Directory where report is generated
-#' 
+#' @param bigcor_on Use bigcor function to reduce memory usage - will be slower
+
 #' @return A list of statistics and plots resulting from the analysis
 #'
 #' @import Biobase
@@ -34,7 +35,8 @@ conan <- function(eset,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
                   reporting=FALSE,
-                  report_path="report.Rmd") {
+                  report_path="report.Rmd",
+                  bigcor_on = FALSE) {
 
     cat("Starting differential connectivity analysis...\n")
 
@@ -107,14 +109,14 @@ conan <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on)
 
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
@@ -138,10 +140,10 @@ conan <- function(eset,
     # Lambda helper functions
     l_cvs <- function(mod_genes, r_edat, t_edat) {
         cv_r <- r_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg,bigcor_on)
 
         cv_t <- t_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg,bigcor_on)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
