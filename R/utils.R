@@ -7,8 +7,13 @@
 #' @import ff
 
 #' @keywords internal
-lower_tri <- function(mat, diag) {
-  as.ff(mat[c(lower.tri(mat,diag=diag))])
+lower_tri <- function(mat, diag, bigcor_on) {
+  if (bigcor_on){
+    as.ff(mat[c(lower.tri(mat,diag=diag))])
+  } else {
+    lower.tri(mat,diag=diag)
+  }
+  
 }
 
 #' @keywords internal
