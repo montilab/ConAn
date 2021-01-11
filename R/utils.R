@@ -11,7 +11,7 @@ lower_tri <- function(mat, diag, bigcor_on) {
   if (bigcor_on){
     as.ff(mat[c(lower.tri(mat,diag=diag))])
   } else {
-    lower.tri(mat,diag=diag)
+    mat[lower.tri(mat, diag=diag)]
   }
   
 }
