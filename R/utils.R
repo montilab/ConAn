@@ -13,7 +13,6 @@ lower_tri <- function(mat, diag, bigcor_on) {
   } else {
     mat[lower.tri(mat, diag=diag)]
   }
-  
 }
 
 #' @keywords internal

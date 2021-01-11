@@ -109,14 +109,14 @@ conan <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on=bigcor_on)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list,bigcor_on=bigcor_on)
 
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
@@ -140,10 +140,10 @@ conan <- function(eset,
     # Lambda helper functions
     l_cvs <- function(mod_genes, r_edat, t_edat) {
         cv_r <- r_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg,bigcor_on)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg,bigcor_on=bigcor_on)
 
         cv_t <- t_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg,bigcor_on)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg,bigcor_on=bigcor_on)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
