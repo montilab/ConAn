@@ -2,17 +2,22 @@
 #' @import ggplot2
 #' 
 #' @export
-plot_connectivity <- function(output) {
+plot_connectivity <- function(output,bigcor_on) {
     mapply(function(cv_r, cv_t, mod_name){
         cat("plotting connectivity")
         r_name <- output$args$ctrl
         t_name <- output$args$cond
-        print(class(cv_r))
-        print(class(cv_t))
         
-        df <- data.frame(Connectivity = c(cv_r[,], cv_t[,]),
-                         Group = c(rep(r_name, length(cv_r)),
-                                   rep(t_name, length(cv_t))))
+        if (bigcor_on){
+            df <- data.frame(Connectivity = c(cv_r[,], cv_t[,]),
+                             Group = c(rep(r_name, length(cv_r)),
+                                       rep(t_name, length(cv_t))))
+        } else {
+            df <- data.frame(Connectivity = c(cv_r, cv_t),
+                             Group = c(rep(r_name, length(cv_r)),
+                                       rep(t_name, length(cv_t))))
+        }
+        
         
         if (output$args$mean_correct) {
             
@@ -22,14 +27,16 @@ plot_connectivity <- function(output) {
             r_bg_name <- paste(r_name, "(BG)")
             t_bg_name <- paste(t_name, "(BG)")
             
-            cat("second dataframe")
-            print(class(cv_r_bg))
-            print(class(cv_t_bg))
-            print(dim(cv_r_bg))
-            print(dim(cv_t_bg))
-            df <- rbind(df, data.frame(Connectivity = c(cv_r_bg[,], cv_t_bg[,]),
-                                       Group = c(rep(r_bg_name, length(cv_r_bg)),
-                                                 rep(t_bg_name, length(cv_t_bg)))))
+            if (bigcor_on){
+                df <- rbind(df, data.frame(Connectivity = c(cv_r_bg[,], cv_t_bg[,]),
+                                           Group = c(rep(r_bg_name, length(cv_r_bg)),
+                                                     rep(t_bg_name, length(cv_t_bg)))))
+            } else {
+                df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
+                                           Group = c(rep(r_bg_name, length(cv_r_bg)),
+                                                     rep(t_bg_name, length(cv_t_bg)))))
+            }
+            
         }
         
         # Wes Anderson: Darjeeling
