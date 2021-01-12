@@ -183,7 +183,7 @@ conan <- function(eset,
     ############################################
     # Start paralellization
     #
-    print("Step 1")
+    cat("Step 1")
     # 1.
     # A list of randomly shuffled groups of samples
     iter_sampling <- mclapply(seq(iter),
