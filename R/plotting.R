@@ -4,7 +4,6 @@
 #' @export
 plot_connectivity <- function(output,bigcor_on) {
     mapply(function(cv_r, cv_t, mod_name){
-        cat("plotting connectivity")
         r_name <- output$args$ctrl
         t_name <- output$args$cond
         
@@ -61,7 +60,6 @@ plot_connectivity <- function(output,bigcor_on) {
 #' 
 #' @export
 plot_permutations <- function(output) {
-    cat("plotting permutations")
     mdc_type <- output$args$mdc_type
     mod_names <- output$data$mod_names
     mdc_permutated <- data.frame(output$iter) %>%
