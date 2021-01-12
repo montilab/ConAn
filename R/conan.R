@@ -192,8 +192,7 @@ conan <- function(eset,
                               r_samples = r_samples,
                               t_samples = t_samples,
                               method = sim_type,
-                              mc.cores = cores,
-                              bigcor_on = bigcor_on)
+                              mc.cores = cores)
 
     # 2.
     cat("Step 2")
