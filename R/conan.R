@@ -191,11 +191,12 @@ conan <- function(eset,
                               r_samples = r_samples,
                               t_samples = t_samples,
                               method = sim_type,
-                              mc.cores = cores)
+                              mc.cores = cores,
+                              bigcor_on = bigcor_on)
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores, bigcor_on = bigcor_on)
 
     # 3.
     # Calculate differential module connectivity
@@ -204,7 +205,8 @@ conan <- function(eset,
                          c_edat = c_edat,
                          mods = mod_list,
                          mdc_type = mdc_type,
-                         mc.cores = cores)
+                         mc.cores = cores,
+                         bigcor_on = bigcor_on)
     #
     #
     # End paralellization
