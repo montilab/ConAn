@@ -9,6 +9,9 @@ plot_connectivity <- function(output) {
         t_name <- output$args$cond
         
         cat("first dataframe")
+        print(class(cv_r))
+        print(class(cv_r[,]))
+        print(length(cv_r))
         df <- data.frame(Connectivity = c(cv_r[,], cv_t[,]),
                          Group = c(rep(r_name, length(cv_r)),
                                    rep(t_name, length(cv_t))))
