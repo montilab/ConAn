@@ -47,7 +47,7 @@ atanh_lower_tri_erase_mods_cor <- function(edat, mods, bigcor_on) {
 }
 
 #' @keywords internal
-modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_type) {
+modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_type, bigcor_on) {
     
     mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, bg_r,bigcor_on=bigcor_on) %>%
             tanh() %>%
