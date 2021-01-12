@@ -21,7 +21,7 @@ plot_connectivity <- function(output) {
             t_bg_name <- paste(t_name, "(BG)")
             
             cat("second dataframe")
-            df <- rbind(df, data.frame(Connectivity = c(cv_r_bg[,], cv_t_bg)[,],
+            df <- rbind(df, data.frame(Connectivity = c(cv_r_bg[,], cv_t_bg[,]),
                                        Group = c(rep(r_bg_name, length(cv_r_bg)),
                                                  rep(t_bg_name, length(cv_t_bg)))))
         }
