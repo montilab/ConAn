@@ -183,7 +183,6 @@ conan <- function(eset,
     ############################################
     # Start paralellization
     #
-    cat("Step 1")
     # 1.
     # A list of randomly shuffled groups of samples
     iter_sampling <- mclapply(seq(iter),
@@ -195,12 +194,10 @@ conan <- function(eset,
                               mc.cores = cores)
 
     # 2.
-    cat("Step 2")
     # Background connectivity for each iteration
     iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores, bigcor_on = bigcor_on)
 
     # 3.
-    cat("Step 3")
     # Calculate differential module connectivity
     iter_out <- mclapply(iter_background,
                          do_differential_connectivity,
@@ -213,19 +210,15 @@ conan <- function(eset,
     #
     # End paralellization
     ############################################
-    cat("Step 4")
     # Results for each iter for each module
     rbind_iter_out <- do.call(rbind, iter_out)
 
-    cat("Step 5")
     # For iter for module -> module differential connectivity
     iter_mdc <- rbind_iter_out[,1] %>%
                 unlist() %>%
                 matrix(nrow=length(names(mod_list))) %>%
                 t()
 
-    cat("Step 6")
-    
     output$iter <- iter_mdc
 
     # ------------------------------------------
