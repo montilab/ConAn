@@ -1,60 +1,38 @@
-#' @import ff
-#' @import propagate
-#' @import ffbase
-
 #' @keywords internal
-atanh_lower_tri_cor <- function(edat, bigcor_on) {
-    if (bigcor_on){
-        edat %>%
-            bigcor(size = dim(edat)[2],verbose=FALSE) %>%
-            lower_tri(diag=FALSE,bigcor_on=bigcor_on) %>%
-            remove_na() %>%
-            atanh()
-    } else {
-        edat %>%
-            stats::cor(method="pearson") %>%
-            lower_tri(diag=FALSE,bigcor_on=bigcor_on) %>%
-            remove_na() %>%
-            atanh()
-    }
+atanh_lower_tri_cor <- function(edat) {
+    edat %>%
+    stats::cor(method="pearson") %>%
+    lower_tri(diag=FALSE) %>%
+    remove_na() %>%
+    atanh()
 }
 
 #' @keywords internal
-bg_corrected_atanh_lower_tri_cor <- function(edat, bg, bigcor_on) {
+bg_corrected_atanh_lower_tri_cor <- function(edat, bg) {
     edat %>%
-    atanh_lower_tri_cor(bigcor_on=bigcor_on) %>%
+    atanh_lower_tri_cor() %>%
     subtract_bg(bg)
 }
 
 #' @keywords internal
-atanh_lower_tri_erase_mods_cor <- function(edat, mods, bigcor_on) {
-    if (bigcor_on){
-        edat %>%
-            bigcor(size = dim(edat)[2],verbose=FALSE) %>%
-            erase_mods(mods=mods) %>%
-            lower_tri(diag=FALSE, bigcor_on=bigcor_on) %>%
-            remove_na() %>%
-            atanh()
-    } else {
-        edat %>%
-            stats::cor(method="pearson") %>%
-            erase_mods(mods=mods) %>%
-            lower_tri(diag=FALSE,bigcor_on=bigcor_on) %>%
-            remove_na() %>%
-            atanh()
-    }
-    
+atanh_lower_tri_erase_mods_cor <- function(edat, mods) {
+    edat %>%
+    stats::cor(method="pearson") %>%
+    erase_mods(mods=mods) %>%
+    lower_tri(diag=FALSE) %>%
+    remove_na() %>%
+    atanh()
 }
 
 #' @keywords internal
-modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_type, bigcor_on) {
+modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_type) {
     
-    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, bg_r,bigcor_on=bigcor_on) %>%
+    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, bg_r) %>%
             tanh() %>%
             square() %>%
             mean(na.rm=TRUE) 
 
-    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, bg_t,bigcor_on=bigcor_on) %>%
+    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, bg_t) %>%
             tanh() %>%
             square() %>%
             mean(na.rm=TRUE)

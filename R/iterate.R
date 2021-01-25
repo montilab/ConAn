@@ -38,8 +38,7 @@ iter_differential_connectivity <- function(iter,
                                            mods,
                                            mean_correct=FALSE,
                                            sim_type=c("bootstrap", "permutation"),
-                                           mdc_type=c("fraction", "difference"),
-                                           bigcor_on) {
+                                           mdc_type=c("fraction", "difference")) {
     
     # Shuffle samples
     c_n <- length(c_samples)
@@ -63,11 +62,11 @@ iter_differential_connectivity <- function(iter,
     if (mean_correct) {
         
         bg_r <- c_edat[iter$samples_r,] %>%
-                atanh_lower_tri_erase_mods_cor(mods=mods,bigcor_on=bigcor_on) %>%
+                atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                 mean(na.rm=TRUE)
 
         bg_t <- c_edat[iter$samples_t,] %>%
-                atanh_lower_tri_erase_mods_cor(mods=mods,bigcor_on=bigcor_on) %>%
+                atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                 mean(na.rm=TRUE)
 
     } else {
@@ -81,8 +80,7 @@ iter_differential_connectivity <- function(iter,
                                           t_edat=t_edat[,mod],
                                           bg_r=bg_r,
                                           bg_t=bg_t,
-                                          mdc_type=mdc_type,
-                                          bigcor_on=bigcor_on)
+                                          mdc_type=mdc_type)
     }) %>%
     list()
 }
@@ -90,16 +88,16 @@ iter_differential_connectivity <- function(iter,
 
 
 #' @keywords internal
-do_background <- function(iter, c_edat, mods, mean_correct, bigcor_on) {
+do_background <- function(iter, c_edat, mods, mean_correct) {
 
     if (mean_correct) {
         
         iter[['bg_r']] <- c_edat[iter$samples_r,] %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods,bigcor_on=bigcor_on) %>%
+                          atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                           mean(na.rm=TRUE)
 
         iter[['bg_t']] <- c_edat[iter$samples_t,] %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods,bigcor_on=bigcor_on) %>%
+                          atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                           mean(na.rm=TRUE)
 
     } else {
@@ -111,7 +109,7 @@ do_background <- function(iter, c_edat, mods, mean_correct, bigcor_on) {
 }
 
 #' @keywords internal
-do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, bigcor_on) {
+do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type) {
 
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
@@ -124,8 +122,7 @@ do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, big
                                           t_edat=t_edat[,mod],
                                           bg_r=bg_r,
                                           bg_t=bg_t,
-                                          mdc_type=mdc_type,
-                                          bigcor_on=bigcor_on)
+                                          mdc_type=mdc_type)
     })
 
     iter_output <- list(mods_mdc)

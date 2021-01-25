@@ -2,20 +2,14 @@
 #' @import ggplot2
 #' 
 #' @export
-plot_connectivity <- function(output,bigcor_on) {
+plot_connectivity <- function(output) {
     mapply(function(cv_r, cv_t, mod_name){
         r_name <- output$args$ctrl
         t_name <- output$args$cond
         
-        if (bigcor_on){
-            df <- data.frame(Connectivity = c(cv_r[,], cv_t[,]),
-                             Group = c(rep(r_name, length(cv_r)),
-                                       rep(t_name, length(cv_t))))
-        } else {
-            df <- data.frame(Connectivity = c(cv_r, cv_t),
-                             Group = c(rep(r_name, length(cv_r)),
-                                       rep(t_name, length(cv_t))))
-        }
+        df <- data.frame(Connectivity = c(cv_r, cv_t),
+                         Group = c(rep(r_name, length(cv_r)),
+                                   rep(t_name, length(cv_t))))
         
         
         if (output$args$mean_correct) {
@@ -26,15 +20,9 @@ plot_connectivity <- function(output,bigcor_on) {
             r_bg_name <- paste(r_name, "(BG)")
             t_bg_name <- paste(t_name, "(BG)")
             
-            if (bigcor_on){
-                df <- rbind(df, data.frame(Connectivity = c(cv_r_bg[,], cv_t_bg[,]),
-                                           Group = c(rep(r_bg_name, length(cv_r_bg)),
-                                                     rep(t_bg_name, length(cv_t_bg)))))
-            } else {
-                df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
-                                           Group = c(rep(r_bg_name, length(cv_r_bg)),
-                                                     rep(t_bg_name, length(cv_t_bg)))))
-            }
+            df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
+                                       Group = c(rep(r_bg_name, length(cv_r_bg)),
+                                                 rep(t_bg_name, length(cv_t_bg)))))
             
         }
         
