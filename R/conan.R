@@ -12,6 +12,7 @@
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
 #' @param report_dir Directory where report is generated
+#' @param bg_sampling_n Directory where report is generated
 
 #' @return A list of statistics and plots resulting from the analysis
 #'
@@ -34,7 +35,8 @@ conan <- function(eset,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
                   reporting=FALSE,
-                  report_path="report.Rmd") {
+                  report_path="report.Rmd",
+                  bg_sampling_n = dim(eset)[1]) {
 
     cat("Starting differential connectivity analysis...\n")
 
@@ -107,14 +109,16 @@ conan <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list) %>%
+                   sample(bg_sampling_n, replace = FALSE)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list) %>%
+                   sample(bg_sampling_n, replace = FALSE)
 
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
@@ -193,7 +197,7 @@ conan <- function(eset,
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores, bg_sampling_n = bg_sampling_n)
 
     # 3.
     # Calculate differential module connectivity
