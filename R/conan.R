@@ -146,7 +146,7 @@ conan <- function(eset,
         cv_t <- t_edat[,mod_genes] %>% 
                 bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg) %>%
                 sample(bg_sampling_n)
-
+        print("sampled background")
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
