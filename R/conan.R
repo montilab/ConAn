@@ -140,10 +140,12 @@ conan <- function(eset,
     # Lambda helper functions
     l_cvs <- function(mod_genes, r_edat, t_edat) {
         cv_r <- r_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg) %>%
+                sample(bg_sampling_n)
 
         cv_t <- t_edat[,mod_genes] %>% 
-                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg)
+                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg) %>%
+                sample(bg_sampling_n)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
