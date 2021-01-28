@@ -94,12 +94,12 @@ do_background <- function(iter, c_edat, mods, mean_correct, bg_sampling_n) {
         
         iter[['bg_r']] <- c_edat[iter$samples_r,] %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>% 
-                          sample(bg_sampling_n = bg_sampling_n) %>%
+                          sample(bg_sampling_n) %>%
                           mean(na.rm=TRUE)
 
         iter[['bg_t']] <- c_edat[iter$samples_t,] %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          sample(bg_sampling_n = bg_sampling_n) %>%
+                          sample(bg_sampling_n) %>%
                           mean(na.rm=TRUE)
 
     } else {
