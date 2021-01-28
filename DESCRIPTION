@@ -1,6 +1,6 @@
-Package: ConAn
+Package: ConAn_testing
 Title: Differential Network Connectivity Analysis
-Version: 1.0.0
+Version: 1.0.1
 Author:
     Eric Reed <reeder@bu.edu>,
     Anthony Federico <anfed@bu.edu>,
