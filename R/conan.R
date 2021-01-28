@@ -109,17 +109,15 @@ conan <- function(eset,
 
         # Background connectivity vector
         cv_r_bg <- r_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list) %>%
-                   sample(bg_sampling_n, replace = FALSE)
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
         cv_t_bg <- t_edat %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list) %>%
-                   sample(bg_sampling_n, replace = FALSE)
-
+                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+        
         # Background module connectivity
         mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
 
