@@ -8,6 +8,7 @@
 #' @param sim_type Simulation type can be either c("bootstrap", "permutation")
 #' @param iter Number of sampling iterations during significance testing
 #' @param mean_correct Correct with background connectivity
+#' @param sample_sizes - sizes of the samples used to calculate background connectivity
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -29,11 +30,15 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
+				  sample_sizes=c(),
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
+
+	# alternative sampling boolean
+	alt_samp <- is.null(sample_sizes))
 
     cat("Starting differential connectivity analysis...\n")
 
@@ -104,15 +109,22 @@ conan <- function(eset,
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 
-        # Background connectivity vector
-        cv_r_bg <- r_edat %>% 
+		# alternative samples if choice is made, otherwise use default
+		r_alt <- r_samples[sample(1:length(r_samples), sample_sizes[1])]
+		t_alt <- t_samples[sample(1:length(t_samples), sample_sizes[2])]
+
+		r_sub <- ifelse(alt_samp, r_alt, r_samples)
+		t_sub <- ifelse(alt_samp, t_alt, t_samples)
+        
+		# Background connectivity vector
+        cv_r_bg <- r_edat[r_sub,] %>% 
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
-        cv_t_bg <- t_edat %>% 
+        cv_t_bg <- t_edat[t_sub,] %>% 
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
@@ -192,7 +204,7 @@ conan <- function(eset,
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, sample_sizes=sample_sizes, mc.cores=cores)
 
     # 3.
     # Calculate differential module connectivity
