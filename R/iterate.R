@@ -89,7 +89,7 @@ iter_differential_connectivity <- function(iter,
 
 #' @keywords internal
 do_background <- function(iter, c_edat, mods, mean_correct, sample_sizes=c()) {
-	alt_sample_size <- is.null(sample_sizes)
+	alt_sample_size <- !is.null(sample_sizes)
 	if(alt_sample_size) {
 		if(sample_sizes[1] > length(iter$samples_r)) {
 			stop(paste("Sample size of group r", sample_sizes[1], "can not be greater than the length of iter$sample_r"))

@@ -38,7 +38,7 @@ conan <- function(eset,
                   report_path="report.Rmd") {
 
 	# alternative sampling boolean
-	alt_samp <- is.null(sample_sizes)
+	alt_samp <- !is.null(sample_sizes)
 
     cat("Starting differential connectivity analysis...\n")
 
