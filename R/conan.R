@@ -110,8 +110,12 @@ conan <- function(eset,
         cat("Calculating background connectivity...\n")
 
 		# alternative samples if choice is made, otherwise use default
-		r_alt <- r_samples[sample(1:length(r_samples), sample_sizes[1])]
-		t_alt <- t_samples[sample(1:length(t_samples), sample_sizes[2])]
+		r_alt <- NULL
+		t_alt <- NULL
+		if(alt_samp) {
+			r_alt <- r_samples[sample(1:length(r_samples), sample_sizes[1])]
+			t_alt <- t_samples[sample(1:length(t_samples), sample_sizes[2])]
+		}
 
 		r_sub <- ifelse(alt_samp, r_alt, r_samples)
 		t_sub <- ifelse(alt_samp, t_alt, t_samples)
