@@ -119,16 +119,19 @@ conan <- function(eset,
 
 		r_sub <- ifelse(alt_samp, r_alt, r_samples)
 		t_sub <- ifelse(alt_samp, t_alt, t_samples)
-        
+       
+	   	r_m <- r_edat[r_sub,]
+		t_m <- t_edat[t_sub,]
+
 		# Background connectivity vector
-        cv_r_bg <- r_edat[r_sub,] %>% 
+        cv_r_bg <- r_m %>% 
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
         mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
 
         # Background connectivity vector
-        cv_t_bg <- t_edat[t_sub,] %>% 
+        cv_t_bg <- t_m %>% 
                    atanh_lower_tri_erase_mods_cor(mods=mod_list)
 
         # Background module connectivity
