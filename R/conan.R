@@ -117,8 +117,8 @@ conan <- function(eset,
 			t_alt <- t_samples[sample(1:length(t_samples), sample_sizes[2])]
 		}
 
-		r_sub <- ifelse(alt_samp, r_alt, r_samples)
-		t_sub <- ifelse(alt_samp, t_alt, t_samples)
+		r_sub <- if(alt_samp) r_alt else r_samples
+		t_sub <- if(alt_samp) t_alt else t_samples
        
 	   	r_m <- r_edat[r_sub,]
 		t_m <- t_edat[t_sub,]
