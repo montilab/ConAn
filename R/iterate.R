@@ -98,8 +98,8 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 
     if (mean_correct) {		
 		g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
-	   	r_m <- r_edat[iter$samples_r, g_sbst]
-		t_m <- t_edat[iter$samples_t, g_sbst]
+	   	r_m <- c_edat[iter$samples_r, g_sbst]
+		t_m <- c_edat[iter$samples_t, g_sbst]
 
 		iter[['bg_r']] <- r_m %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
