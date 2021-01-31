@@ -115,8 +115,8 @@ conan <- function(eset,
 		# index of genes to be included in this iteration
 		g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
        
-	   	r_m <- r_edat[,g_subst]
-		t_m <- t_edat[,g_subst]
+	   	r_m <- r_edat[,g_sbst]
+		t_m <- t_edat[,g_sbst]
 
 		# Background connectivity vector
         cv_r_bg <- r_m %>% 
