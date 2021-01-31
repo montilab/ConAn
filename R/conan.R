@@ -8,7 +8,6 @@
 #' @param sim_type Simulation type can be either c("bootstrap", "permutation")
 #' @param iter Number of sampling iterations during significance testing
 #' @param mean_correct Correct with background connectivity
-#' @param sample_sizes - sizes of the samples used to calculate background connectivity
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -30,7 +29,7 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-				  sample_sizes=c(),
+				  N_genes=NULL,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
@@ -38,7 +37,7 @@ conan <- function(eset,
                   report_path="report.Rmd") {
 
 	# alternative sampling boolean
-	alt_samp <- !is.null(sample_sizes)
+	alt_samp <- !is.null(N_genes)
 
     cat("Starting differential connectivity analysis...\n")
 
@@ -79,6 +78,8 @@ conan <- function(eset,
     # Genes
     genes <- colnames(c_edat)
 
+	if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+
     # Store all data in output variable
     output <- list()
     
@@ -108,20 +109,12 @@ conan <- function(eset,
     # Calculate background modular connectivity
     if (mean_correct){
         cat("Calculating background connectivity...\n")
-
-		# alternative samples if choice is made, otherwise use default
-		r_alt <- NULL
-		t_alt <- NULL
-		if(alt_samp) {
-			r_alt <- r_samples[sample(1:length(r_samples), sample_sizes[1])]
-			t_alt <- t_samples[sample(1:length(t_samples), sample_sizes[2])]
-		}
-
-		r_sub <- if(alt_samp) r_alt else r_samples
-		t_sub <- if(alt_samp) t_alt else t_samples
+		
+		# index of genes to be included in this iteration
+		g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
        
-	   	r_m <- r_edat[r_sub,]
-		t_m <- t_edat[t_sub,]
+	   	r_m <- r_edat[,g_subst]
+		t_m <- t_edat[,g_subst]
 
 		# Background connectivity vector
         cv_r_bg <- r_m %>% 
@@ -211,7 +204,7 @@ conan <- function(eset,
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, sample_sizes=sample_sizes, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, N_genes=N_genes, mc.cores=cores)
 
     # 3.
     # Calculate differential module connectivity
