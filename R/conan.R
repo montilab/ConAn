@@ -77,8 +77,10 @@ conan <- function(eset,
 
     # Genes
     genes <- colnames(c_edat)
-
-	if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+	
+	if(alt_samp) {
+		if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+	}
 
     # Store all data in output variable
     output <- list()
