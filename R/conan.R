@@ -8,6 +8,7 @@
 #' @param sim_type Simulation type can be either c("bootstrap", "permutation")
 #' @param iter Number of sampling iterations during significance testing
 #' @param mean_correct Correct with background connectivity
+#' @param N_genes Number of randomly selected genes to be used during each iteration
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
