@@ -119,7 +119,7 @@ conan <- function(eset,
 		cv_t_bg <- list() 
 		for (i in 1:iter_bg) {
 			# index of genes to be included in this iteration
-			g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
+			g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
        
 	   		r_m <- r_edat[,g_sbst]
 			t_m <- t_edat[,g_sbst]

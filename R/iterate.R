@@ -97,7 +97,7 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 	}
 
     if (mean_correct) {		
-		g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
+		g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
 	   	r_m <- c_edat[iter$samples_r, g_sbst]
 		t_m <- c_edat[iter$samples_t, g_sbst]
 
