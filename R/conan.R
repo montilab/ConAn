@@ -9,6 +9,7 @@
 #' @param iter Number of sampling iterations during significance testing
 #' @param mean_correct Correct with background connectivity
 #' @param N_genes Number of randomly selected genes to be used during each iteration
+#' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -31,6 +32,7 @@ conan <- function(eset,
                   iter=5,
                   mean_correct=FALSE,
 				  N_genes=NULL,
+				  iter_bg=20,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
@@ -113,25 +115,26 @@ conan <- function(eset,
     if (mean_correct){
         cat("Calculating background connectivity...\n")
 		
-		# index of genes to be included in this iteration
-		g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
+		cv_r_bg <- list()
+		cv_t_bg <- list() 
+		for (i in 1:iter_bg) {
+			# index of genes to be included in this iteration
+			g_sbst <- if (alt_samp) sample(1:N_genes, N_genes) else 1:length(genes)
        
-	   	r_m <- r_edat[,g_sbst]
-		t_m <- t_edat[,g_sbst]
+	   		r_m <- r_edat[,g_sbst]
+			t_m <- t_edat[,g_sbst]
 
-		# Background connectivity vector
-        cv_r_bg <- r_m %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
+			# Background connectivity vector
+        	cv_r_bg <- append(cv_r_bg, list(atanh_lower_tri_erase_mods_cor(r_m, mods=mod_list)))
 
-        # Background module connectivity
-        mc_r_bg <- mean(cv_r_bg, na.rm=TRUE)
+        	# Background connectivity vector
+        	cv_t_bg <- append(cv_t_bg, list(atanh_lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+		}
+		# Background module connectivity
+        mc_r_bg <- mean(unlist(cv_r_bg), na.rm=TRUE)
 
-        # Background connectivity vector
-        cv_t_bg <- t_m %>% 
-                   atanh_lower_tri_erase_mods_cor(mods=mod_list)
-
-        # Background module connectivity
-        mc_t_bg <- mean(cv_t_bg, na.rm=TRUE)
+		# Background module connectivity
+        mc_t_bg <- mean(unlist(cv_t_bg), na.rm=TRUE)
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
