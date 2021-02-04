@@ -86,27 +86,33 @@ iter_differential_connectivity <- function(iter,
 }
 
 
-
 #' @keywords internal
-do_background <- function(iter, c_edat, mods, mean_correct, bg_sampling_n) {
-
-    if (mean_correct) {
+do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
+    genes <- colnames(c_edat)
+    alt_samp <- !is.null(N_genes)
+    
+    if(alt_samp) {
+        if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+    }
+    
+    if (mean_correct) {		
+        g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
+        r_m <- c_edat[iter$samples_r, g_sbst]
+        t_m <- c_edat[iter$samples_t, g_sbst]
         
-        iter[['bg_r']] <- c_edat[iter$samples_r,] %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods) %>% 
-                          sample(bg_sampling_n) %>%
-                          mean(na.rm=TRUE)
-
-        iter[['bg_t']] <- c_edat[iter$samples_t,] %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          sample(bg_sampling_n) %>%
-                          mean(na.rm=TRUE)
-
+        iter[['bg_r']] <- r_m %>%
+            atanh_lower_tri_erase_mods_cor(mods=mods) %>%
+            mean(na.rm=TRUE)
+        
+        iter[['bg_t']] <- t_m %>%
+            atanh_lower_tri_erase_mods_cor(mods=mods) %>%
+            mean(na.rm=TRUE)
+        
     } else {
         iter[['bg_r']] <- 0
         iter[['bg_t']] <- 0
     }
-
+    
     return(iter)
 }
 
