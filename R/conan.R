@@ -141,6 +141,14 @@ conan <- function(eset,
                           mc_r_bg=mc_r_bg,
                           cv_t_bg=cv_t_bg,
                           mc_t_bg=mc_t_bg)
+        
+        
+        output$bg_metrics <- list(means_r = lapply(cv_r_bg,mean),
+                                  sd_r = lapply(cv_r_bg,sd),
+                                  lengths_r = lapply(cv_r_bg,length),
+                                  means_t = lapply(cv_t_bg,mean),
+                                  sd_t = lapply(cv_r_bg,sd),
+                                  lengths_t = lapply(cv_r_bg,length))
     } else {
         mc_r_bg = 0
         mc_t_bg = 0
@@ -279,7 +287,7 @@ conan <- function(eset,
     
     if (plotting) {
         cat("Generating plots...\n")
-        output$plots <- list(connectivity=plot_connectivity(output),
+        output$plots <- list(connectivity=plot_connectivity(output,N_genes),
                              permutations=plot_permutations(output))
     }
     if (reporting) {
