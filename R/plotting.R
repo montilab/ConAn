@@ -2,7 +2,7 @@
 #' @import ggplot2
 #' 
 #' @export
-plot_connectivity <- function(output) {
+plot_connectivity <- function(output,N_genes) {
     mapply(function(cv_r, cv_t, mod_name){
         r_name <- output$args$ctrl
         t_name <- output$args$cond
@@ -14,15 +14,31 @@ plot_connectivity <- function(output) {
         
         if (output$args$mean_correct) {
             
-            cv_r_bg <- output$bg$cv_r_bg
-            cv_t_bg <- output$bg$cv_t_bg
-                
+            cv_r_bg <- unlist(output$bg$cv_r_bg)
+            cv_t_bg <- unlist(output$bg$cv_t_bg)
+            
             r_bg_name <- paste(r_name, "(BG)")
             t_bg_name <- paste(t_name, "(BG)")
             
-            df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
-                                       Group = c(rep(r_bg_name, length(cv_r_bg)),
-                                                 rep(t_bg_name, length(cv_t_bg)))))
+            if (is.null(N_genes)){
+                
+                df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
+                                           Group = c(rep(r_bg_name, length(cv_r_bg)),
+                                                     rep(t_bg_name, length(cv_t_bg)))))
+            } else {
+                
+                len_r_bg <- output$bg_metrics$lengths_r
+                len_t_bg <- output$bg_metrics$lengths_t
+                
+                iter_r <- unlist(lapply(1:length(len_r_bg),@(x) rep(x,len_r_bg[x])))
+                iter_t <- unlist(lapply(1:length(len_t_bg),@(x) rep(x,len_t_bg[x])))
+                
+                df <- rbind(df, data.frame(Connectivity = c(unlist(cv_r_bg), unlist(cv_t_bg)),
+                                           Group = c(rep(r_bg_name, sum(len_r_bg)),
+                                                     rep(t_bg_name, sum(len_t_bg))),
+                                            Iteration = c(iter_r, iter_t)))
+            }
+            
             
         }
         
