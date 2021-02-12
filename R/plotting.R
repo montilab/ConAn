@@ -8,39 +8,44 @@ plot_connectivity <- function(output,N_genes) {
 
         r_name <- output$args$ctrl
         t_name <- output$args$cond
-        
+
         df <- data.frame(Connectivity = c(cv_r, cv_t),
                          Group = c(rep(r_name, length(cv_r)),
                                    rep(t_name, length(cv_t))))
 
+
         if (output$args$mean_correct) {
 
-            cv_r_bg <- unlist(output$bg$cv_r_bg)
-            cv_t_bg <- unlist(output$bg$cv_t_bg)
+            cv_r_bg <- output$bg$cv_r_bg
+            cv_t_bg <- output$bg$cv_t_bg
+
 
             r_bg_name <- paste(r_name, "(BG)")
             t_bg_name <- paste(t_name, "(BG)")
-            
+
             if (is.null(N_genes)){
-                
+
                 df <- rbind(df, data.frame(Connectivity = c(cv_r_bg, cv_t_bg),
                                            Group = c(rep(r_bg_name, length(cv_r_bg)),
                                                      rep(t_bg_name, length(cv_t_bg)))))
             } else {
-                
+
                 len_r_bg <- output$bg_metrics$lengths_r
                 len_t_bg <- output$bg_metrics$lengths_t
-                
-                iter_r <- unlist(lapply(1:length(len_r_bg),@(x) rep(x,len_r_bg[x])))
-                iter_t <- unlist(lapply(1:length(len_t_bg),@(x) rep(x,len_t_bg[x])))
-                
+
+                len_r <- function(x) {rep(x,len_r_bg[x])}
+                len_t <- function(x) {rep(x,len_r_bg[x])}
+
+                iter_r <- unlist(lapply(1:length(len_r_bg), len_r))
+                iter_t <- unlist(lapply(1:length(len_t_bg), len_t))
+
                 df <- rbind(df, data.frame(Connectivity = c(unlist(cv_r_bg), unlist(cv_t_bg)),
                                            Group = c(rep(r_bg_name, sum(len_r_bg)),
                                                      rep(t_bg_name, sum(len_t_bg))),
                                             Iteration = c(iter_r, iter_t)))
             }
-            
-            
+
+
         }
 
         # Wes Anderson: Darjeeling
