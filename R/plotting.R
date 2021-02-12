@@ -39,6 +39,8 @@ plot_connectivity <- function(output,N_genes) {
                 iter_r <- unlist(lapply(1:length(len_r_bg), len_r))
                 iter_t <- unlist(lapply(1:length(len_t_bg), len_t))
 
+                print(sum(len_r_bg))
+
                 df <- rbind(df, data.frame(Connectivity = c(unlist(cv_r_bg), unlist(cv_t_bg)),
                                            Group = c(rep(r_bg_name, sum(len_r_bg)),
                                                      rep(t_bg_name, sum(len_t_bg))),
