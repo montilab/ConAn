@@ -14,12 +14,12 @@
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
 #' @param report_dir Directory where report is generated
-#' 
+#'
 #' @return A list of statistics and plots resulting from the analysis
 #'
 #' @import Biobase
 #' @import magrittr
-#' @import stats 
+#' @import stats
 #' @import parallel
 #'
 #' @export
@@ -31,8 +31,8 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-				  N_genes=NULL,
-				  iter_bg=20,
+				          N_genes=NULL,
+				          iter_bg=20,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
@@ -68,7 +68,7 @@ conan <- function(eset,
     print(mod_list)
 
     # Data parsing
-    pdat <- pData(eset)  
+    pdat <- pData(eset)
     c_samples <- rownames(pdat)
     r_samples <- c_samples[(pdat[,covariate] == ctrl)]
     t_samples <- c_samples[(pdat[,covariate] == cond)]
@@ -80,14 +80,14 @@ conan <- function(eset,
 
     # Genes
     genes <- colnames(c_edat)
-	
+
 	if(alt_samp) {
 		if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
 	}
 
     # Store all data in output variable
     output <- list()
-    
+
     # Input data
     output$data <- list(eset=eset,
                         mod_list=mod_list,
@@ -114,13 +114,13 @@ conan <- function(eset,
     # Calculate background modular connectivity
     if (mean_correct){
         cat("Calculating background connectivity...\n")
-		
-		cv_r_bg <- list()
-		cv_t_bg <- list() 
-		for (i in 1:iter_bg) {
-			# index of genes to be included in this iteration
-			g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
-       
+
+        cv_r_bg <- list()
+        cv_t_bg <- list()
+        for (i in 1:iter_bg) {
+              # index of genes to be included in this iteration
+              g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
+
 	   		r_m <- r_edat[,g_sbst]
 			t_m <- t_edat[,g_sbst]
 
@@ -154,10 +154,10 @@ conan <- function(eset,
 
     # Lambda helper functions
     l_cvs <- function(mod_genes, r_edat, t_edat) {
-        cv_r <- r_edat[,mod_genes] %>% 
+        cv_r <- r_edat[,mod_genes] %>%
                 bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg)
 
-        cv_t <- t_edat[,mod_genes] %>% 
+        cv_t <- t_edat[,mod_genes] %>%
                 bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
@@ -175,7 +175,7 @@ conan <- function(eset,
         if (mdc_type == "fraction") { return(mods_mcs$mc_t / mods_mcs$mc_r) }
         if (mdc_type == "difference") { return(mods_mcs$mc_t - mods_mcs$mc_r) }
     }
-    # Adjusted module differential connectivity 
+    # Adjusted module differential connectivity
     mods_mdc_adj <- lapply(mods_mcs, lapply_get_mdc)
 
     output$stat <- list(# Reference connvectivity vector for each module
@@ -194,7 +194,7 @@ conan <- function(eset,
     # ------------------------------------------
 
     cat("Estimating p-values using", iter, "iterations. \n")
-    
+
     ############################################
     # Start paralellization
     #

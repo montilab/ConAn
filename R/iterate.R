@@ -30,16 +30,16 @@ do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstr
 }
 
 
-iter_differential_connectivity <- function(iter, 
+iter_differential_connectivity <- function(iter,
                                            c_edat,
-                                           c_samples, 
-                                           r_samples, 
+                                           c_samples,
+                                           r_samples,
                                            t_samples,
                                            mods,
                                            mean_correct=FALSE,
                                            sim_type=c("bootstrap", "permutation"),
                                            mdc_type=c("fraction", "difference")) {
-    
+
     # Shuffle samples
     c_n <- length(c_samples)
     r_n <- length(r_samples)
@@ -60,7 +60,7 @@ iter_differential_connectivity <- function(iter,
 
     # Background Connectivity
     if (mean_correct) {
-        
+
         bg_r <- c_edat[iter$samples_r,] %>%
                 atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                 mean(na.rm=TRUE)
@@ -96,10 +96,10 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 		if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
 	}
 
-    if (mean_correct) {		
-		g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
+    if (mean_correct) {
+      g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
 	   	r_m <- c_edat[iter$samples_r, g_sbst]
-		t_m <- c_edat[iter$samples_t, g_sbst]
+      t_m <- c_edat[iter$samples_t, g_sbst]
 
 		iter[['bg_r']] <- r_m %>%
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
