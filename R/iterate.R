@@ -86,7 +86,6 @@ iter_differential_connectivity <- function(iter,
 }
 
 
-
 #' @keywords internal
 do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 	genes <- colnames(c_edat)
@@ -109,11 +108,12 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
                           atanh_lower_tri_erase_mods_cor(mods=mods) %>%
                           mean(na.rm=TRUE)
 
+
     } else {
         iter[['bg_r']] <- 0
         iter[['bg_t']] <- 0
     }
-
+    
     return(iter)
 }
 
