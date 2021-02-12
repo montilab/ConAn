@@ -4,6 +4,8 @@
 #' @export
 plot_connectivity <- function(output,N_genes) {
     mapply(function(cv_r, cv_t, mod_name){
+
+
         r_name <- output$args$ctrl
         t_name <- output$args$cond
 
@@ -16,6 +18,7 @@ plot_connectivity <- function(output,N_genes) {
 
             cv_r_bg <- output$bg$cv_r_bg
             cv_t_bg <- output$bg$cv_t_bg
+
 
             r_bg_name <- paste(r_name, "(BG)")
             t_bg_name <- paste(t_name, "(BG)")
