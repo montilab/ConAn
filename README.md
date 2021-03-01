@@ -4,33 +4,35 @@ Differential Network Connectivity Analysis
 ### Install with devtools
 ```R
 library(devtools)
-devtools::install_github("montilab/ConAn")
+devtools::install_github("anfederico/ConAn")
+```
+
+```{r}
+library(ConAn)
 ```
 
 ### Run ConAn
 ```R
-library(ConAn)
+simulations <- readRDS(file.path(system.file("extdata", package="ConAn"), "simulations.rds"))
 
-# Load test data
-eset <- ConAn::eset
-mod_list <- ConAn::mod_list
+eset <- simulations$eset
+pathways <- simulations$pathways
+names(pathways) <- paste("P", seq(length(pathways)), sep="")
 
-# Run ConAn
-output <- ConAn::diff_conn(eset,
-                           mod_list,
-                           covariate = "subtype",
-                           ctrl = "LumA",
-                           cond = "Basal",
-                           sim_type = "bootstrap",
-                           iter = 5,
-                           mean_correct = T,
-                           cores = 1,
-                           use_gpu = F,
-                           mdc_type = "frac",
-                           plotting = T)
+output <- conan(eset=eset,
+                mod_list=pathways,
+                covariate="group",
+                ctrl="G1",
+                cond="G2",
+                sim_type=c("bootstrap", "permutation")[[1]],
+                iter=20,
+                mean_correct=TRUE,
+                cores=1,
+                mdc_type=c("fraction", "difference")[[2]],
+                plotting=T,
+                reporting=T,
+                report_path="report.Rmd")
 
-# Plot data
-output$plots
 ```
 
 ### Note: ConAn is under active development

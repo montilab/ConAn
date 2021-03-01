@@ -1,0 +1,128 @@
+---
+title: 'Differential Connectivity Analysis Report'
+date: 'Report Created: `r Sys.Date()`'
+output:
+  html_document:
+    theme: simplex
+    toc: false
+    df_print: paged
+---
+
+
+# Parameters
+**Covariate**: `r output$args$covariate`  
+**Reference Group**: `r output$args$ctrl`  
+**Test Group**: `r output$args$cond`  
+**Simulation Type**: `r output$args$sim_type`  
+**Iterations**: `r output$args$iter`  
+**Cores**: `r output$args$cores`  
+**Mean Background Correction**: `r output$args$mean_correct`  
+**Differential Connectivity Type**: `r output$args$mdc_type`  
+**Plotting**: `r output$args$plotting`  
+**Report Directory**: `r output$args$report_path`  
+
+***
+
+# Background Statistics
+**`r output$args$ctrl` Background**: `r output$bg$mc_r_bg`  
+**`r output$args$cond` Background**: `r output$bg$mc_t_bg`  
+
+***
+
+
+```{r setup, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+library(kableExtra)
+options(scipen=1, digits=3)
+```
+
+
+# Results
+```{r}
+mdc
+```
+
+
+# Visualizations
+##  {.tabset .tabset-fade}
+  
+
+### P1 
+```{r P1, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P1']]
+p2 <- output$plots$permutations[['P1']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P2 
+```{r P2, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P2']]
+p2 <- output$plots$permutations[['P2']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P3 
+```{r P3, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P3']]
+p2 <- output$plots$permutations[['P3']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P4 
+```{r P4, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P4']]
+p2 <- output$plots$permutations[['P4']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P5 
+```{r P5, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P5']]
+p2 <- output$plots$permutations[['P5']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P6 
+```{r P6, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P6']]
+p2 <- output$plots$permutations[['P6']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P7 
+```{r P7, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P7']]
+p2 <- output$plots$permutations[['P7']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P8 
+```{r P8, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P8']]
+p2 <- output$plots$permutations[['P8']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P9 
+```{r P9, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P9']]
+p2 <- output$plots$permutations[['P9']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+
+
+### P10 
+```{r P10, fig.width=9, fig.align='center'}
+p1 <- output$plots$connectivity[['P10']]
+p2 <- output$plots$permutations[['P10']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+```
+

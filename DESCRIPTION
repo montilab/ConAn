@@ -1,6 +1,6 @@
 Package: ConAn
 Title: Differential Network Connectivity Analysis
-Version: 0.99.0
+Version: 1.0.0
 Author:
     Eric Reed <reeder@bu.edu>,
     Anthony Federico <anfed@bu.edu>,
@@ -9,13 +9,14 @@ Maintainer:
     Anthony Federico <anfed@bu.edu>
 Description:
     A package to measure differential connectivity of multiple networks between two conditions with visualization and robust statistical testing.
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.5.0)
 Imports: 
     Biobase,
-    Rcpp,
     magrittr,
     ggplot2,
     rmarkdown,
+    ggpubr,
+    kableExtra,
     dplyr,
     knitr
 Suggests:
@@ -23,8 +24,6 @@ Suggests:
     parallel,
     stats,
     testthat
-LinkingTo: Rcpp (>= 0.11.0), RcppArmadillo (>= 0.4.100.0)
-NeedsCompilation: yes
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true

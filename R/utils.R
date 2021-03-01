@@ -6,7 +6,7 @@
 #'
 #' @keywords internal
 lower_tri <- function(mat, diag) {
-  	mat[lower.tri(mat, diag=diag)]
+        mat[lower.tri(mat, diag=diag)]
 }
 
 #' @keywords internal
@@ -20,37 +20,38 @@ subtract_bg <- function(mat, bg) {
 }
 
 #' @keywords internal
-erase_mod_list <- function(mat, mod_list) {
-    for (i in mod_list) {
-      mat[i,i] <- NA
+square <- function(x) {
+    x^2
+}
+
+#' @keywords internal
+erase_mods <- function(mat, mods) {
+	genes <- rownames(mat)
+    for (i in mods) {
+	  s <- i[i %in% genes]
+      mat[s,s] <- NA
     }
     return(mat)
 }
 
-#' @importFrom dplyr bind_rows
+#' Format a string using placeholders
+#'
+#' @param string A an unformatted string with placeholders
+#' @param ... Variables to format placeholders with
+#' @return A formatted string
+#' 
+#' @examples
+#' \dontrun{
+#' format_str("Format with {1} and {2}", "x", "y")
+#' }
+#'
 #' @keywords internal
-modlist.to.matzindex <- function(modlist, genes) {
-    modlist.index <- lapply(modlist, function(x) {
-        sapply(x, function(y) {
-            match(y, genes)
-        })
-    })
- 
-    # Create pairwise combinations for each module
-    # Bind into a single dataframe
-    index.pairs <- modlist.index %>%
-                   lapply(function(x) expand.grid(x, x)) %>%
-                   dplyr::bind_rows()
-            
-    # Matrix-like dimension names
-    colnames(index.pairs) <- c("i", "j")
-    
-    # Zero-indexed
-    index.pairs <- index.pairs-1
-    
-    # Matrix is represented as a zero-indexed vector 
-    mat.size <- length(genes)
-    mat.zindex <- index.pairs$i * mat.size + index.pairs$j
-
-    return(mat.zindex)  
+format_str <- function(string, ...) {
+    args <- list(...)
+    for (i in 1:length(args)) {
+        pattern <- paste("\\{", i, "}", sep="")
+        replacement <- args[[i]]
+        string <- gsub(pattern, replacement, string)
+    }
+    return(string)
 }
