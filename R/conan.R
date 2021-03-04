@@ -118,29 +118,42 @@ conan <- function(eset,
         cv_r_bg <- list()
         cv_t_bg <- list()
         for (i in 1:iter_bg) {
-              # index of genes to be included in this iteration
-              g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
+          
+            # index of genes to be included in this iteration
+            g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
 
 	   		r_m <- r_edat[,g_sbst]
 			t_m <- t_edat[,g_sbst]
 
 			# Background connectivity vector
-        	cv_r_bg <- append(cv_r_bg, list(atanh_lower_tri_erase_mods_cor(r_m, mods=mod_list)))
+        	cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
 
         	# Background connectivity vector
-        	cv_t_bg <- append(cv_t_bg, list(atanh_lower_tri_erase_mods_cor(t_m, mods=mod_list)))
-		}
+        	cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+        	
+        }
+        
 		# Background module connectivity
-        mc_r_bg <- mean(unlist(cv_r_bg), na.rm=TRUE)
+        mc_r_bg <- mean(unlist(cv_r_bg)^2)
 
 		# Background module connectivity
-        mc_t_bg <- mean(unlist(cv_t_bg), na.rm=TRUE)
+        mc_t_bg <- mean(unlist(cv_t_bg)^2)
+        
+        # Calculate shrinking factor
+        sh_vec <- get_shrink(cv_r_bg, cv_t_bg, mc_r_bg, mc_t_bg)
+        
+        # Background shrinking factors
+        sh_r_bg <- sh_vec[1]
+        sh_t_bg <- sh_vec[2]
+        
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
                           mc_r_bg=mc_r_bg,
+                          sh_r_bg=sh_r_bg,
                           cv_t_bg=cv_t_bg,
-                          mc_t_bg=mc_t_bg)
+                          mc_t_bg=mc_t_bg,
+                          sh_t_bg=sh_t_bg)
 
 
         output$bg_metrics <- list(means_r = lapply(cv_r_bg,mean),
@@ -152,6 +165,8 @@ conan <- function(eset,
     } else {
         mc_r_bg = 0
         mc_t_bg = 0
+        sh_r_bg = 1
+        sh_t_bg = 1
     }
 
     # ------------------------------------------
@@ -161,18 +176,19 @@ conan <- function(eset,
     cat("Calculating module differential connectivity for", length(names(mod_list)), "clusters...\n")
 
     # Lambda helper functions
-    l_cvs <- function(mod_genes, r_edat, t_edat) {
+    l_cvs <- function(mod_genes, r_edat, t_edat, sh_r_bg, sh_t_bg) {
+        
         cv_r <- r_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg)
 
         cv_t <- t_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
     # Background-corrected modular connectivity vectors
-    mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat)
+    mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat, sh_r_bg, sh_t_bg)
 
     # Background-corrected modular connectivity
     mods_mcs <- lapply(mods_cvs, function(x) {
@@ -218,7 +234,13 @@ conan <- function(eset,
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, N_genes=N_genes, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, 
+                                do_background, 
+                                c_edat=c_edat, 
+                                mods=mod_list, 
+                                mean_correct=mean_correct, 
+                                N_genes=N_genes, 
+                                mc.cores=cores)
 
 
     # 3.
