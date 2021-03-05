@@ -80,3 +80,15 @@ plot_permutations <- function(output) {
 
     }, mdc_permutated, output$stat$mods_mdc_adj, mod_names, SIMPLIFY=FALSE)
 }
+
+p_val_levels <- function(mod_pvals, level_thresh) {
+	if(! prod(level_thresh == sort(level_thresh,  decreasing = T))) {
+		stop("level_thresh must be a descending order vector")
+	}
+  	return(colSums(sapply(mod_pvals, function(x) x <= level_thresh)))
+}
+
+rename_mod_names <- function(modnames, levels) {
+	stars <- sapply(levels, function(x) paste(rep("*", x), collapse=""))
+	return(paste0(stars, modnames))
+}

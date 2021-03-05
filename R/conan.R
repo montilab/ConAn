@@ -10,6 +10,7 @@
 #' @param mean_correct Correct with background connectivity
 #' @param N_genes Number of randomly selected genes to be used during each iteration
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
+#' @param p_val_thresh thresholds used in hypeR plotting
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -21,6 +22,7 @@
 #' @import magrittr
 #' @import stats
 #' @import parallel
+#' @import hypeR
 #'
 #' @export
 conan <- function(eset,
@@ -31,13 +33,26 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-				          N_genes=NULL,
-				          iter_bg=1,
+				  N_genes=NULL,
+				  iter_bg=1,
+				  p_val_thresh=c(0.1, 0.05, 0.01),
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
+	
+	p_val_levels <- function(mod_pvals, level_thresh) {
+		if(! prod(level_thresh == sort(level_thresh,  decreasing = T))) {
+			stop("level_thresh must be a descending order vector")
+		}
+  		return(colSums(sapply(mod_pvals, function(x) x <= level_thresh)))
+	}
+
+	rename_mod_names <- function(modnames, levels) {
+		stars <- sapply(levels, function(x) paste(rep("*", x), collapse=""))
+		return(paste0(stars, modnames))
+	}
 
 	# alternative sampling boolean
 	alt_samp <- !is.null(N_genes)
@@ -87,7 +102,7 @@ conan <- function(eset,
 
     # Store all data in output variable
     output <- list()
-
+i
     # Input data
     output$data <- list(eset=eset,
                         mod_list=mod_list,
@@ -310,8 +325,15 @@ conan <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
+		levels <- p_val_levels(output$significance$fdr, p_val_thresh)
+		new_names <- rename_mod_names(names(mod_list), levels)
+		mod_prime <- mod_list
+		names(mod_prime) <- new_names
+		genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
+		mhyp <- hypeR(mod_prime, genesets, test="hypergeometric", background=30000)
         output$plots <- list(connectivity=plot_connectivity(output,N_genes),
-                             permutations=plot_permutations(output))
+                             permutations=plot_permutations(output),
+							 hypeR=hyp_dots(mhyp, merge=TRUE, fdr=0.05, title="Co-expression Modules"))
     }
     if (reporting) {
         cat("Generating report...\n")

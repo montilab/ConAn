@@ -78,6 +78,11 @@ options(scipen=1, digits=3)
 ```{r}
 mdc
 ```
+
+# hypeR
+```{r}
+output$plots$hypeR
+```
 "
 
   rmd_tabset <- "
@@ -90,6 +95,7 @@ mdc
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
+
 ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
