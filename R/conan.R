@@ -325,7 +325,7 @@ conan <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
-		levels <- p_val_levels(output$significance$fdr, p_val_thresh)
+		levels <- p_val_levels(output$significance$mdc_fdr, p_val_thresh)
 		new_names <- rename_mod_names(names(mod_list), levels)
 		mod_prime <- mod_list
 		names(mod_prime) <- new_names
