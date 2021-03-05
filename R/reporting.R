@@ -80,7 +80,7 @@ mdc
 ```
 
 # hypeR
-```{r}
+```{r, fig.width=9, fig.align='center'}
 output$plots$hypeR
 ```
 "
