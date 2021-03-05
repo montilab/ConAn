@@ -102,7 +102,7 @@ conan <- function(eset,
 
     # Store all data in output variable
     output <- list()
-i
+
     # Input data
     output$data <- list(eset=eset,
                         mod_list=mod_list,
