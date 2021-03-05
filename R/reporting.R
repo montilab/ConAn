@@ -79,8 +79,10 @@ options(scipen=1, digits=3)
 mdc
 ```
 
+
+
 # hypeR
-```{r, fig.width=9, fig.align='center'}
+```{r grey, fig.width=9, fig.align='center'}
 output$plots$hypeR
 ```
 "
