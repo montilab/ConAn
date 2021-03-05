@@ -16,8 +16,8 @@ plot_connectivity <- function(output,N_genes) {
 
         if (output$args$mean_correct) {
 
-            cv_r_bg <- unlist(output$bg$cv_r_bg)
-            cv_t_bg <- unlist(output$bg$cv_t_bg)
+            cv_r_bg <- unlist(lapply(output$bg$cv_r_bg, mean))
+            cv_t_bg <- unlist(lapply(output$bg$cv_t_bg, mean))
 
 
             r_bg_name <- paste(r_name, "(BG)")
