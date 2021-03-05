@@ -95,7 +95,6 @@ output$plots$hypeR
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
-
 ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
