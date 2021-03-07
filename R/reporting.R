@@ -1,9 +1,15 @@
 #' @import magrittr
+#' @import hypeR
 #' @import ggpubr
 #' @import kableExtra
 #' @keywords internal
 report <- function(output) {
-
+  
+  genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
+  mhyp <- hypeR(mod_list, genesets, test="hypergeometric", background=30000)
+  REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
+  mhyp_R <- hypeR(mod_list, REACTOME, test="hypergeometric", background=30000)
+  
   r_name <- output$args$ctrl
   t_name <- output$args$cond
 
@@ -31,6 +37,9 @@ report <- function(output) {
                          "P-Value",
                          "FDR")
   }
+  
+  sigmdc <- mdc %>% 
+    filter(FDR <= 0.05)
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
@@ -60,6 +69,8 @@ options(scipen=1, digits=3)
 **Iterations**: `r output$args$iter`  
 **Cores**: `r output$args$cores`  
 **Mean Background Correction**: `r output$args$mean_correct`  
+**Background Sample Size**: `r output$args$N_genes`  
+**Background Iterations**: `r output$args$iter_bg`  
 **Differential Connectivity Type**: `r output$args$mdc_type`  
 **Plotting**: `r output$args$plotting`  
 **Report Directory**: `r output$args$report_path`  
@@ -72,14 +83,6 @@ options(scipen=1, digits=3)
 
 ***
 "
-
-  rmd_results <- "
-# Results
-```{r}
-mdc
-```
-"
-
   rmd_tabset <- "
 # Visualizations
 ##  {.tabset .tabset-fade}
@@ -94,13 +97,35 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
+  rmd_results <- "
+# Results
+```{r}
+mdc
+```
+"
+
+  rmd_hyp <- "
+### hypeR Enrichment Analysis and Significantly Differential Modules
+```{r {2}, fig.width=15, fig.align='center'}
+p2 <- hyp_dots(mhyp, merge=TRUE, fdr=0.05, title='KEGG')
+p3 <- hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome')
+ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
+```
+"
+
+  rmd_sigresults <- "
+# Results
+```{r}
+sigmdc
+```
+"
+
+
   file_path <- output$args$report_path
 
   write(rmd_config, file=file_path, append=FALSE)
   write(rmd_arguments, file=file_path, append=TRUE)
   write(rmd_knitr, file=file_path, append=TRUE)
-  write(rmd_results, file=file_path, append=TRUE)
-
   if (output$args$plotting) {
       write(rmd_tabset, file=file_path, append=TRUE)
 
@@ -115,3 +140,7 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
                     output_format="html_document",
                     output_file=paste(file_path, "html", sep="."))
 }
+  write(rmd_results, file=file_path, append=TRUE)
+  write(rmd_hyp, file=file_path, append=TRUE)
+  write(rmd_sigresults, file=file_path, append=TRUE)
+
