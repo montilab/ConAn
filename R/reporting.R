@@ -135,12 +135,13 @@ sigmdc
           write(file=file_path, append=TRUE)
       }
   }
-
+  write(rmd_results, file=file_path, append=TRUE)
+  write(rmd_hyp, file=file_path, append=TRUE)
+  write(rmd_sigresults, file=file_path, append=TRUE)
+  
   rmarkdown::render(input=file_path,
                     output_format="html_document",
                     output_file=paste(file_path, "html", sep="."))
 }
-  write(rmd_results, file=file_path, append=TRUE)
-  write(rmd_hyp, file=file_path, append=TRUE)
-  write(rmd_sigresults, file=file_path, append=TRUE)
+  
 
