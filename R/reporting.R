@@ -39,7 +39,7 @@ report <- function(output, mod_list) {
   }
   
   sigmdc <- mdc %>% 
-    filter(FDR <= 0.05)
+    dplyr::filter(FDR <= 0.05)
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
