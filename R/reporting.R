@@ -114,7 +114,7 @@ ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
 "
 
   rmd_sigresults <- "
-# Results
+# Significant Results
 ```{r}
 sigmdc
 ```
