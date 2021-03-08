@@ -92,8 +92,8 @@ options(scipen=1, digits=3)
 ### {1} 
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
-p2 <- output$plots$permutations[['{1}']]
-ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+#p2 <- output$plots$permutations[['{1}']]
+ggarrange(p1, ncol=1, widths=c(0.5)) #ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
