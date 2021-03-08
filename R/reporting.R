@@ -3,7 +3,7 @@
 #' @import ggpubr
 #' @import kableExtra
 #' @keywords internal
-report <- function(output) {
+report <- function(output, mod_list) {
   
   genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
   mhyp <- hypeR(mod_list, genesets, test="hypergeometric", background=30000)
