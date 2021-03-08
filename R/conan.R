@@ -317,7 +317,7 @@ conan <- function(eset,
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output)
+        report(output, mod_list)
     }
 
     cat("Successful finish...\n")
