@@ -13,6 +13,8 @@ plot_connectivity <- function(output,N_genes) {
     low_t_IQR <- quantile(cv_t, 0.25) - (1.5 * (quantile(cv_t, 0.75) - quantile(cv_t, 0.25)))
     high_t_IQR <- quantile(cv_t, 0.75) + (1.5 * (quantile(cv_t, 0.75) - quantile(cv_t, 0.25)))
     
+    cat("making_dataframe...\n")
+    
     df <- data.frame(Median = c(median(cv_r), median(cv_t)),
                       Min = c(min(cv_r[cv_r >= low_r_IQR]), min(cv_t[cv_t >= low_t_IQR])),
                       Lower = c(quantile(cv_r, 0.25), quantile(cv_t, 0.25)),
@@ -20,6 +22,7 @@ plot_connectivity <- function(output,N_genes) {
                       Max = c(max(cv_r[cv_r <= high_r_IQR]), max(cv_t[cv_t <= high_t_IQR])),
                       Group = c(r_name, t_name))
 
+    cat("meancorrect...\n")
     
     if (output$args$mean_correct) {
       
@@ -29,11 +32,15 @@ plot_connectivity <- function(output,N_genes) {
       r_bg_name <- paste(r_name, "(BG)")
       t_bg_name <- paste(t_name, "(BG)")
       
+      cat("bgIQR...\n")
+      
       low_rbg_IQR <- quantile(cv_r_bg, 0.25) - (1.5 * (quantile(cv_r_bg, 0.75) - quantile(cv_r_bg, 0.25)))
       high_rbg_IQR <- quantile(cv_r_bg, 0.75) + (1.5 * (quantile(cv_r_bg, 0.75) - quantile(cv_r_bg, 0.25)))
       low_tbg_IQR <- quantile(cv_t_bg, 0.25) - (1.5 * (quantile(cv_t_bg, 0.75) - quantile(cv_t_bg, 0.25)))
       high_tbg_IQR <- quantile(cv_t_bg, 0.75) + (1.5 * (quantile(cv_t_bg, 0.75) - quantile(cv_t_bg, 0.25)))
     
+      cat("bgdataframe...\n")
+      
       df <- rbind(df, data.frame(Median = c(median(cv_r_bg), median(cv_t_bg)),
                         Min = c(min(cv_r_bg[cv_r_bg >= low_rbg_IQR]), min(cv_t_bg[cv_t_bg >= low_tbg_IQR])),
                         Lower = c(quantile(cv_r_bg, 0.25), quantile(cv_t_bg, 0.25)),
@@ -46,6 +53,8 @@ plot_connectivity <- function(output,N_genes) {
     # Blue Red Teal Orange
     palette <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00")
     
+    cat("plotting...\n")
+    
     df %>%
       ggplot(aes(x = Group, fill = Group)) +
       geom_boxplot(aes(ymin=Min, lower=Lower, middle=Median, upper=Upper, ymax=Max, group = Group), stat = "identity") +
@@ -55,6 +64,8 @@ plot_connectivity <- function(output,N_genes) {
       ggtitle(mod_name) +
       theme(axis.text.x=element_text(angle=30))+
       scale_fill_manual(values=palette)
+    
+    cat("done...\n")
     
   }, output$stat$mods_cv_r, output$stat$mods_cv_t, output$data$mod_names, SIMPLIFY=FALSE)
 }
