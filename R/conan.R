@@ -65,8 +65,6 @@ conan <- function(eset,
     # Ensure each module has at least two genes
     mod_list <- mod_list[ unlist(lapply(mod_list, function(x) length(x) >= 2)) ]
 
-    print(mod_list)
-
     # Data parsing
     pdat <- pData(eset)
     c_samples <- rownames(pdat)
