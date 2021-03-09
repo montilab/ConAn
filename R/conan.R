@@ -11,6 +11,7 @@
 #' @param N_genes Number of randomly selected genes to be used during each iteration
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
 #' @param p_val_thresh thresholds used in hypeR plotting
+#' @param FDR_thresh FDR threshold for modules
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -343,7 +344,7 @@ conan <- function(eset,
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output)
+        report(output, FDR_thresh)
     }
 
     cat("Successful finish...\n")

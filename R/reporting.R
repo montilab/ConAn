@@ -3,7 +3,7 @@
 #' @import ggpubr
 #' @import kableExtra
 #' @keywords internal
-report <- function(output) {
+report <- function(output, FDR_thresh) {
   
   r_name <- output$args$ctrl
   t_name <- output$args$cond
@@ -34,7 +34,7 @@ report <- function(output) {
   }
   
   sigmdc <- mdc %>% 
-    dplyr::filter(FDR <= 0.05)
+    dplyr::filter(FDR <= FDR_thresh)
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
