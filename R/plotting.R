@@ -27,8 +27,8 @@ plot_connectivity <- function(output) {
     
     if (output$args$mean_correct) {
       
-      cv_r_bg <- output$bg_metrics$means_r
-      cv_t_bg <- output$bg_metrics$means_t
+      cv_r_bg <- unlist(output$bg_metrics$means_r)
+      cv_t_bg <- unlist(output$bg_metrics$means_t)
       
       r_bg_name <- paste(r_name, "(BG)")
       t_bg_name <- paste(t_name, "(BG)")
