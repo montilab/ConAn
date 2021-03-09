@@ -36,6 +36,7 @@ conan <- function(eset,
 				  N_genes=NULL,
 				  iter_bg=1,
 				  p_val_thresh=c(0.1, 0.05, 0.01),
+				  FDR_thresh=0.05,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
@@ -333,15 +334,16 @@ conan <- function(eset,
 		names(mod_prime) <- new_names
 		genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
 		mhyp <- hypeR(mod_prime, genesets, test="hypergeometric", background=30000)
-        output$plots <- list(connectivity=plot_connectivity(output,N_genes),
+		REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
+		mhyp_R <- hypeR(mod_prime, REACTOME, test="hypergeometric", background=30000)
+        output$plots <- list(connectivity=plot_connectivity(output),
                              permutations=plot_permutations(output),
-							 hypeR=hyp_dots(mhyp, merge=TRUE, fdr=0.05, title="Co-expression Modules"))
-        output$plots <- list(connectivity=plot_connectivity(output,N_genes))
-                             #permutations=plot_permutations(output))
+							 hypeR=hyp_dots(mhyp, merge=TRUE, fdr=0.05, title="Co-expression Modules"),
+							 hyperR_reactome=hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome'))
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output, mod_list)
+        report(output)
     }
 
     cat("Successful finish...\n")

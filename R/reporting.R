@@ -3,12 +3,7 @@
 #' @import ggpubr
 #' @import kableExtra
 #' @keywords internal
-report <- function(output, mod_list) {
-  
-  genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
-  mhyp <- hypeR(mod_list, genesets, test="hypergeometric", background=30000)
-  REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
-  mhyp_R <- hypeR(mod_list, REACTOME, test="hypergeometric", background=30000)
+report <- function(output) {
   
   r_name <- output$args$ctrl
   t_name <- output$args$cond
@@ -107,8 +102,8 @@ mdc
   rmd_hyp <- "
 ### hypeR Enrichment Analysis and Significantly Differential Modules
 ```{r {2}, fig.width=15, fig.align='center'}
-p2 <- hyp_dots(mhyp, merge=TRUE, fdr=0.05, title='KEGG')
-p3 <- hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome')
+p2 <- output$plots$hypeR
+p3 <- output$plots$hypeR_reactome
 ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
 ```
 "
