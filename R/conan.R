@@ -111,16 +111,18 @@ conan <- function(eset,
 
     # Input parameters
     output$args <- list(covariate=covariate,
-                        ctrl=ctrl,
-                        cond=cond,
-                        sim_type=sim_type,
-                        iter=iter,
-                        mean_correct=mean_correct,
-                        cores=cores,
-                        mdc_type=mdc_type,
-                        plotting=plotting,
-                        reporting=reporting,
-                        report_path=report_path)
+                    ctrl=ctrl,
+                    cond=cond,
+                    sim_type=sim_type,
+                    iter=iter,
+                    mean_correct=mean_correct,
+                    N_genes=N_genes,
+                    iter_bg=iter_bg,
+                    cores=cores,
+                    mdc_type=mdc_type,
+                    plotting=plotting,
+                    reporting=reporting,
+                    report_path=report_path)
 
     # ------------------------------------------
     #    Calculating Background Connectivity
@@ -334,10 +336,12 @@ conan <- function(eset,
         output$plots <- list(connectivity=plot_connectivity(output,N_genes),
                              permutations=plot_permutations(output),
 							 hypeR=hyp_dots(mhyp, merge=TRUE, fdr=0.05, title="Co-expression Modules"))
+        output$plots <- list(connectivity=plot_connectivity(output,N_genes))
+                             #permutations=plot_permutations(output))
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output)
+        report(output, mod_list)
     }
 
     cat("Successful finish...\n")
