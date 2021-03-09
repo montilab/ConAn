@@ -29,63 +29,6 @@ do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstr
     return(output)
 }
 
-
-iter_differential_connectivity <- function(iter,
-                                           c_edat,
-                                           c_samples,
-                                           r_samples,
-                                           t_samples,
-                                           mods,
-                                           mean_correct=FALSE,
-                                           sim_type=c("bootstrap", "permutation"),
-                                           mdc_type=c("fraction", "difference")) {
-
-    # Shuffle samples
-    c_n <- length(c_samples)
-    r_n <- length(r_samples)
-    t_n <- length(t_samples)
-
-    if (sim_type == "bootstrap") {
-        r_samples <- r_samples[sample(1:r_n, r_n, replace=TRUE)]
-        t_samples <- t_samples[sample(1:t_n, t_n, replace=TRUE)]
-    }
-    if (sim_type == "permutation") {
-        Sample <- sample(1:c_n, c_n)
-        r_samples <- c_samples[Sample[1:r_n]]
-        t_samples <- c_samples[Sample[(r_n+1):(r_n+t_n)]]
-    }
-
-    r_edat <- c_edat[match(r_samples, c_samples),]
-    t_edat <- c_edat[match(t_samples, c_samples),]
-
-    # Background Connectivity
-    if (mean_correct) {
-
-        bg_r <- c_edat[iter$samples_r,] %>%
-                atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                mean(na.rm=TRUE)
-
-        bg_t <- c_edat[iter$samples_t,] %>%
-                atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                mean(na.rm=TRUE)
-
-    } else {
-        bg_r <- 0
-        bg_t <- 0
-    }
-
-    # Differential Connectivity
-    lapply(mods, function(mod) {
-        modular_differential_connectivity(r_edat=r_edat[,mod],
-                                          t_edat=t_edat[,mod],
-                                          bg_r=bg_r,
-                                          bg_t=bg_t,
-                                          mdc_type=mdc_type)
-    }) %>%
-    list()
-}
-
-
 #' @keywords internal
 do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 	genes <- colnames(c_edat)
@@ -97,23 +40,34 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 
     if (mean_correct) {
       g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
-	   	r_m <- c_edat[iter$samples_r, g_sbst]
-      t_m <- c_edat[iter$samples_t, g_sbst]
 
-		iter[['bg_r']] <- r_m %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          mean(na.rm=TRUE)
+      r_m <- c_edat[iter$samples_r, g_sbst]
+	  t_m <- c_edat[iter$samples_t, g_sbst]
 
-        iter[['bg_t']] <- t_m %>%
-                          atanh_lower_tri_erase_mods_cor(mods=mods) %>%
-                          mean(na.rm=TRUE)
+	  bg_r_cv <- r_m %>%
+	      lower_tri_erase_mods_cor(mods=mods)
+	  bg_t_cv <- t_m %>%
+	      lower_tri_erase_mods_cor(mods=mods)
 
+	  iter$bg_r <- bg_r_cv %>%
+	      `^`(2) %>%
+	      mean
+	  iter$bg_t <- bg_t_cv %>%
+          `^`(2) %>%
+          mean
+
+      # Calculate shrinking factors
+	  sh_vec <- get_shrink(bg_r_cv, bg_t_cv, iter$bg_r, iter$bg_t)
+	  iter$sh_r <- sh_vec[1]
+	  iter$sh_t <- sh_vec[2]
 
     } else {
-        iter[['bg_r']] <- 0
-        iter[['bg_t']] <- 0
+        iter$bg_r <- 0
+        iter$bg_t <- 0
+        iter$sh_r <- 1
+        iter$sh_t <- 1
     }
-    
+
     return(iter)
 }
 
@@ -123,14 +77,14 @@ do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type) {
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
 
-    bg_r <- iter_input$bg_r
-    bg_t <- iter_input$bg_t
+    sh_r <- iter_input$sh_r
+    sh_t <- iter_input$sh_t
 
     mods_mdc <- lapply(mods, function(mod) {
         modular_differential_connectivity(r_edat=r_edat[,mod],
                                           t_edat=t_edat[,mod],
-                                          bg_r=bg_r,
-                                          bg_t=bg_t,
+                                          sh_r=sh_r,
+                                          sh_t=sh_t,
                                           mdc_type=mdc_type)
     })
 

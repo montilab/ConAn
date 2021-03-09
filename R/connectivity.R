@@ -8,10 +8,11 @@ atanh_lower_tri_cor <- function(edat) {
 }
 
 #' @keywords internal
-bg_corrected_atanh_lower_tri_cor <- function(edat, bg) {
+bg_corrected_atanh_lower_tri_cor <- function(edat, sh) {
     edat %>%
     atanh_lower_tri_cor() %>%
-    subtract_bg(bg)
+    `*`(sh)
+        
 }
 
 #' @keywords internal
@@ -25,17 +26,17 @@ atanh_lower_tri_erase_mods_cor <- function(edat, mods) {
 }
 
 #' @keywords internal
-modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_type) {
+modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_type) {
     
-    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, bg_r) %>%
+    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, sh_r) %>%
             tanh() %>%
             square() %>%
-            mean(na.rm=TRUE) 
+            mean() 
 
-    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, bg_t) %>%
+    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, sh_t) %>%
             tanh() %>%
             square() %>%
-            mean(na.rm=TRUE)
+            mean()
 
     if (mdc_type == "fraction") { 
         return(mc_t / mc_r)
@@ -44,3 +45,13 @@ modular_differential_connectivity <- function(r_edat, t_edat, bg_r, bg_t, mdc_ty
         return(mc_t - mc_r)
     }
 }
+
+#' @keywords internal
+lower_tri_erase_mods_cor <- function(edat, mods) {
+    edat %>%
+        stats::cor(method="pearson") %>%
+        erase_mods(mods=mods) %>%
+        lower_tri(diag=FALSE) %>%
+        remove_na()
+}
+

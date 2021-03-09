@@ -10,6 +10,8 @@
 #' @param mean_correct Correct with background connectivity
 #' @param N_genes Number of randomly selected genes to be used during each iteration
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
+#' @param p_val_thresh thresholds used in hypeR plotting
+#' @param FDR_thresh FDR threshold for modules
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #' @param reporting Generate a markdown report for analysis
@@ -21,6 +23,7 @@
 #' @import magrittr
 #' @import stats
 #' @import parallel
+#' @import hypeR
 #'
 #' @export
 conan <- function(eset,
@@ -31,13 +34,27 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-				          N_genes=NULL,
-				          iter_bg=1,
+				  N_genes=NULL,
+				  iter_bg=1,
+				  p_val_thresh=c(0.1, 0.05, 0.01),
+				  FDR_thresh=0.05,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
+	
+	p_val_levels <- function(mod_pvals, level_thresh) {
+		if(! prod(level_thresh == sort(level_thresh,  decreasing = T))) {
+			stop("level_thresh must be a descending order vector")
+		}
+  		return(colSums(sapply(mod_pvals, function(x) x <= level_thresh)))
+	}
+
+	rename_mod_names <- function(modnames, levels) {
+		stars <- sapply(levels, function(x) paste(rep("*", x), collapse=""))
+		return(paste0(stars, modnames))
+	}
 
 	# alternative sampling boolean
 	alt_samp <- !is.null(N_genes)
@@ -96,16 +113,18 @@ conan <- function(eset,
 
     # Input parameters
     output$args <- list(covariate=covariate,
-                        ctrl=ctrl,
-                        cond=cond,
-                        sim_type=sim_type,
-                        iter=iter,
-                        mean_correct=mean_correct,
-                        cores=cores,
-                        mdc_type=mdc_type,
-                        plotting=plotting,
-                        reporting=reporting,
-                        report_path=report_path)
+                    ctrl=ctrl,
+                    cond=cond,
+                    sim_type=sim_type,
+                    iter=iter,
+                    mean_correct=mean_correct,
+                    N_genes=N_genes,
+                    iter_bg=iter_bg,
+                    cores=cores,
+                    mdc_type=mdc_type,
+                    plotting=plotting,
+                    reporting=reporting,
+                    report_path=report_path)
 
     # ------------------------------------------
     #    Calculating Background Connectivity
@@ -118,29 +137,42 @@ conan <- function(eset,
         cv_r_bg <- list()
         cv_t_bg <- list()
         for (i in 1:iter_bg) {
-              # index of genes to be included in this iteration
-              g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
+          
+            # index of genes to be included in this iteration
+            g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
 
 	   		r_m <- r_edat[,g_sbst]
 			t_m <- t_edat[,g_sbst]
 
 			# Background connectivity vector
-        	cv_r_bg <- append(cv_r_bg, list(atanh_lower_tri_erase_mods_cor(r_m, mods=mod_list)))
+        	cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
 
         	# Background connectivity vector
-        	cv_t_bg <- append(cv_t_bg, list(atanh_lower_tri_erase_mods_cor(t_m, mods=mod_list)))
-		}
+        	cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+        	
+        }
+        
 		# Background module connectivity
-        mc_r_bg <- mean(unlist(cv_r_bg), na.rm=TRUE)
+        mc_r_bg <- mean(unlist(cv_r_bg)^2)
 
 		# Background module connectivity
-        mc_t_bg <- mean(unlist(cv_t_bg), na.rm=TRUE)
+        mc_t_bg <- mean(unlist(cv_t_bg)^2)
+        
+        # Calculate shrinking factor
+        sh_vec <- get_shrink(cv_r_bg, cv_t_bg, mc_r_bg, mc_t_bg)
+        
+        # Background shrinking factors
+        sh_r_bg <- sh_vec[1]
+        sh_t_bg <- sh_vec[2]
+        
 
         # Storage for background statistics
         output$bg <- list(cv_r_bg=cv_r_bg,
                           mc_r_bg=mc_r_bg,
+                          sh_r_bg=sh_r_bg,
                           cv_t_bg=cv_t_bg,
-                          mc_t_bg=mc_t_bg)
+                          mc_t_bg=mc_t_bg,
+                          sh_t_bg=sh_t_bg)
 
 
         output$bg_metrics <- list(means_r = lapply(cv_r_bg,mean),
@@ -152,6 +184,8 @@ conan <- function(eset,
     } else {
         mc_r_bg = 0
         mc_t_bg = 0
+        sh_r_bg = 1
+        sh_t_bg = 1
     }
 
     # ------------------------------------------
@@ -161,18 +195,19 @@ conan <- function(eset,
     cat("Calculating module differential connectivity for", length(names(mod_list)), "clusters...\n")
 
     # Lambda helper functions
-    l_cvs <- function(mod_genes, r_edat, t_edat) {
+    l_cvs <- function(mod_genes, r_edat, t_edat, sh_r_bg, sh_t_bg) {
+        
         cv_r <- r_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(bg=mc_r_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg)
 
         cv_t <- t_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(bg=mc_t_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
 
     # Background-corrected modular connectivity vectors
-    mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat)
+    mods_cvs <- lapply(mod_list, l_cvs, r_edat, t_edat, sh_r_bg, sh_t_bg)
 
     # Background-corrected modular connectivity
     mods_mcs <- lapply(mods_cvs, function(x) {
@@ -218,7 +253,13 @@ conan <- function(eset,
 
     # 2.
     # Background connectivity for each iteration
-    iter_background <- mclapply(iter_sampling, do_background, c_edat=c_edat, mods=mod_list, mean_correct=mean_correct, N_genes=N_genes, mc.cores=cores)
+    iter_background <- mclapply(iter_sampling, 
+                                do_background, 
+                                c_edat=c_edat, 
+                                mods=mod_list, 
+                                mean_correct=mean_correct, 
+                                N_genes=N_genes, 
+                                mc.cores=cores)
 
 
     # 3.
@@ -288,12 +329,22 @@ conan <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
-        output$plots <- list(connectivity=plot_connectivity(output,N_genes),
-                             permutations=plot_permutations(output))
+		levels <- p_val_levels(output$significance$mdc_fdr, p_val_thresh)
+		new_names <- rename_mod_names(names(mod_list), levels)
+		mod_prime <- mod_list
+		names(mod_prime) <- new_names
+		genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
+		mhyp <- hypeR(mod_prime, genesets, test="hypergeometric", background=30000)
+		REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
+		mhyp_R <- hypeR(mod_prime, REACTOME, test="hypergeometric", background=30000)
+        output$plots <- list(connectivity=plot_connectivity(output),
+                             permutations=plot_permutations(output),
+							 hypeR=hyp_dots(mhyp, merge=TRUE, fdr=0.05, title="Co-expression Modules"),
+							 hyperR_reactome=hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome'))
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output)
+        report(output, FDR_thresh)
     }
 
     cat("Successful finish...\n")
