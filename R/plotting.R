@@ -25,6 +25,33 @@ plot_connectivity <- function(output) {
                       Group = c(r_name, t_name))
 
     
+    if (output$args$mean_correct) {
+      
+      cv_r_bg <- unlist(output$bg_metrics$means_r)
+      cv_t_bg <- unlist(output$bg_metrics$means_t)
+      
+      r_bg_name <- paste(r_name, "(BG)")
+      t_bg_name <- paste(t_name, "(BG)")
+      
+     
+      quartile_rbg_1 <- quantile(cv_r_bg, 0.25)
+	  quartile_rbg_3 <- quantile(cv_r_bg, 0.75)
+      quartile_tbg_1 <- quantile(cv_t_bg, 0.25)
+	  quartile_tbg_3 <- quantile(cv_t_bg, 0.75)
+
+	  low_rbg_IQR <- quartile_rbg_1 - (1.5 * (quartile_rbg_3 - quartile_rbg_1))
+      high_rbg_IQR <- quartile_rbg_3 + (1.5 * (quartile_rbg_3 - quartile_rbg_1))
+      low_tbg_IQR <- quartile_tbg_1 - (1.5 * (quartile_tbg_3 - quartile_tbg_1))
+      high_tbg_IQR <- quartile_tbg_3 + (1.5 * (quartile_tbg_3 - quartile_tbg_1))
+    
+      df <- rbind(df, data.frame(Median = c(median(cv_r_bg), median(cv_t_bg)),
+                        Min = c(low_rbg_IQR, low_tbg_IQR),
+                        Lower = c(quartile_rbg_1, quartile_tbg_1),
+                        Upper = c(quartile_rbg_3, quartile_tbg_3),
+                        Max = c(high_rbg_IQR, high_tbg_IQR),
+                        Group = c(r_bg_name, t_bg_name)))
+    }
+    
     # Wes Anderson: Darjeeling
     # Blue Red Teal Orange
     palette <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00")
