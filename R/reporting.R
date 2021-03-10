@@ -126,15 +126,15 @@ sigmdc
   write(rmd_config, file=file_path, append=FALSE)
   write(rmd_arguments, file=file_path, append=TRUE)
   write(rmd_knitr, file=file_path, append=TRUE)
-  if (output$args$plotting) {
-      write(rmd_tabset, file=file_path, append=TRUE)
+  #if (output$args$plotting) {
+  #    write(rmd_tabset, file=file_path, append=TRUE)
 
-      for (tab in output$data$mod_names) {
-          rmd_tab %>%
-          format_str(tab) %>%
-          write(file=file_path, append=TRUE)
-      }
-  }
+  #    for (tab in output$data$mod_names) {
+  #        rmd_tab %>%
+  #        format_str(tab) %>%
+  #        write(file=file_path, append=TRUE)
+  #    }
+  #}
   write(rmd_results, file=file_path, append=TRUE)
   write(rmd_hyp, file=file_path, append=TRUE)
   write(rmd_sigresults, file=file_path, append=TRUE)
