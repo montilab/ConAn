@@ -312,8 +312,8 @@ conan <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
-        output$plots <- list(connectivity=plot_connectivity(output,N_genes))
-                             #permutations=plot_permutations(output))
+        output$plots <- list(connectivity=plot_connectivity(output,N_genes),
+                             permutations=plot_permutations(output))
     }
     if (reporting) {
         cat("Generating report...\n")
