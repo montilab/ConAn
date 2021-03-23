@@ -31,16 +31,16 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-				          N_genes=NULL,
-				          iter_bg=1,
+                          N_genes=NULL,
+                          iter_bg=1,
                   cores=1,
-                  mdc_type=c("fraction", "difference"),
+                  mdc_type=c("difference", "fraction"),
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
 
-	# alternative sampling boolean
-	alt_samp <- !is.null(N_genes)
+    # Alternative sampling boolean
+    alt_samp <- !is.null(N_genes)
 
     cat("Starting differential connectivity analysis...\n")
 
@@ -79,9 +79,9 @@ conan <- function(eset,
     # Genes
     genes <- colnames(c_edat)
 
-	if(alt_samp) {
-		if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
-	}
+    if(alt_samp) {
+        if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+    }
 
     # Store all data in output variable
     output <- list()
@@ -120,21 +120,21 @@ conan <- function(eset,
             # index of genes to be included in this iteration
             g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
 
-	   		r_m <- r_edat[,g_sbst]
-			t_m <- t_edat[,g_sbst]
+            r_m <- r_edat[,g_sbst]
+            t_m <- t_edat[,g_sbst]
 
-			# Background connectivity vector
-        	cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
+            # Background connectivity vector
+            cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
 
-        	# Background connectivity vector
-        	cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
-        	
+            # Background connectivity vector
+            cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+            
         }
         
-		# Background module connectivity
+        # Background module connectivity
         mc_r_bg <- mean(unlist(cv_r_bg)^2)
 
-		# Background module connectivity
+        # Background module connectivity
         mc_t_bg <- mean(unlist(cv_t_bg)^2)
         
         # Calculate shrinking factor
