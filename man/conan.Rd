@@ -4,10 +4,23 @@
 \alias{conan}
 \title{Differential Connectivity}
 \usage{
-conan(eset, mod_list, covariate, ctrl, cond, sim_type = c("bootstrap",
-  "permutation"), iter = 5, mean_correct = FALSE, cores = 1,
-  mdc_type = c("fraction", "difference"), plotting = FALSE,
-  reporting = FALSE, report_path = "report.Rmd")
+conan(
+  eset,
+  mod_list,
+  covariate,
+  ctrl,
+  cond,
+  sim_type = c("bootstrap", "permutation"),
+  iter = 5,
+  mean_correct = FALSE,
+  N_genes = NULL,
+  iter_bg = 1,
+  cores = 1,
+  mdc_type = c("difference", "fraction"),
+  plotting = FALSE,
+  reporting = FALSE,
+  report_path = "report.Rmd"
+)
 }
 \arguments{
 \item{eset}{An expression set object}
@@ -25,6 +38,10 @@ conan(eset, mod_list, covariate, ctrl, cond, sim_type = c("bootstrap",
 \item{iter}{Number of sampling iterations during significance testing}
 
 \item{mean_correct}{Correct with background connectivity}
+
+\item{N_genes}{Number of randomly selected genes to be used during each iteration}
+
+\item{iter_bg}{Number of iterations used when calculating background (only used for non-NULL N_genes values}
 
 \item{cores}{Number of cores available for parallelization}
 
