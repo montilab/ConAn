@@ -12,8 +12,6 @@
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
-#' @param reporting Generate a markdown report for analysis
-#' @param report_dir Directory where report is generated
 #'
 #' @return A list of statistics and plots resulting from the analysis
 #'
@@ -31,13 +29,11 @@ conan <- function(eset,
                   sim_type=c("bootstrap", "permutation"),
                   iter=5,
                   mean_correct=FALSE,
-                          N_genes=NULL,
-                          iter_bg=1,
+                  N_genes=NULL,
+                  iter_bg=1,
                   cores=1,
                   mdc_type=c("difference", "fraction"),
-                  plotting=FALSE,
-                  reporting=FALSE,
-                  report_path="report.Rmd") {
+                  plotting=FALSE) {
 
     # Alternative sampling boolean
     alt_samp <- !is.null(N_genes)
@@ -101,9 +97,7 @@ conan <- function(eset,
                         mean_correct=mean_correct,
                         cores=cores,
                         mdc_type=mdc_type,
-                        plotting=plotting,
-                        reporting=reporting,
-                        report_path=report_path)
+                        plotting=plotting)
 
     # ------------------------------------------
     #    Calculating Background Connectivity
@@ -308,13 +302,15 @@ conan <- function(eset,
 
     if (plotting) {
         cat("Generating plots...\n")
-        output$plots <- list(connectivity=plot_connectivity(output,N_genes),
+        output$plots <- list(connectivity=plot_connectivity(output, N_genes),
                              permutations=plot_permutations(output))
     }
-    if (reporting) {
-        cat("Generating report...\n")
-        report(output)
-    }
+    
+    # Cleanup
+    output$stat$mods_cv_r <- NULL
+    output$stat$mods_cv_t <- NULL
+    output$bg$cv_r_bg <- NULL
+    output$bg$cv_t_bg <- NULL
 
     cat("Successful finish...\n")
     return(output)

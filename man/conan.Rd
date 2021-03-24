@@ -17,9 +17,7 @@ conan(
   iter_bg = 1,
   cores = 1,
   mdc_type = c("difference", "fraction"),
-  plotting = FALSE,
-  reporting = FALSE,
-  report_path = "report.Rmd"
+  plotting = FALSE
 )
 }
 \arguments{
@@ -46,10 +44,6 @@ conan(
 \item{cores}{Number of cores available for parallelization}
 
 \item{mdc_type}{Method for calculating difference in connectivity can be either c("fraction", "difference")}
-
-\item{reporting}{Generate a markdown report for analysis}
-
-\item{report_dir}{Directory where report is generated}
 }
 \value{
 A list of statistics and plots resulting from the analysis
