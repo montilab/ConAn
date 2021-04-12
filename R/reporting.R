@@ -9,6 +9,7 @@ report <- function(output, mod_list) {
   mhyp <- hypeR(mod_list, genesets, test="hypergeometric", background=30000)
   REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
   mhyp_R <- hypeR(mod_list, REACTOME, test="hypergeometric", background=30000)
+
   
   r_name <- output$args$ctrl
   t_name <- output$args$cond
@@ -40,6 +41,7 @@ report <- function(output, mod_list) {
   
   sigmdc <- mdc %>% 
     dplyr::filter(FDR <= 0.05)
+
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
@@ -94,6 +96,7 @@ options(scipen=1, digits=3)
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
 ggarrange(p1, p2, ncol=2, widths=c(0.4,0.6)) #ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+
 ```
 "
 
@@ -109,6 +112,7 @@ mdc
 ```{r {2}, fig.width=15, fig.align='center'}
 p2 <- hyp_dots(mhyp, merge=TRUE, fdr=0.05, title='KEGG')
 p3 <- hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome')
+
 ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
 ```
 "

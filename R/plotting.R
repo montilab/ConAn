@@ -4,6 +4,7 @@
 #' @export
 plot_connectivity <- function(output,N_genes) {
   mapply(function(cv_r, cv_t, mod_name){
+
     
     r_name <- output$args$ctrl
     t_name <- output$args$cond
@@ -24,6 +25,7 @@ plot_connectivity <- function(output,N_genes) {
       
       cv_r_bg <- unlist(output$bg$cv_r_bg)
       cv_t_bg <- unlist(output$bg$cv_t_bg)
+
       
       r_bg_name <- paste(r_name, "(BG)")
       t_bg_name <- paste(t_name, "(BG)")
@@ -38,6 +40,7 @@ plot_connectivity <- function(output,N_genes) {
                         Lower = c(quantile(cv_r_bg, 0.25), quantile(cv_t_bg, 0.25)),
                         Upper = c(quantile(cv_r_bg, 0.75), quantile(cv_t_bg, 0.75)),
                         Max = c(max(cv_r_bg[cv_r_bg <= high_rbg_IQR]), max(cv_t_bg[cv_t_bg <= high_tbg_IQR])),
+
                         Group = c(r_bg_name, t_bg_name)))
     }
     
@@ -90,5 +93,6 @@ plot_permutations <- function(output) {
     
   }, mdc_permutated, output$stat$mods_mdc_adj, mod_names, SIMPLIFY=FALSE)
 }
+
 
 
