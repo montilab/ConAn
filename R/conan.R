@@ -347,7 +347,7 @@ conan <- function(eset,
     }
     if (reporting) {
         cat("Generating report...\n")
-        report(output, FDR_thresh)
+        report(output, mod_list)
     }
 
     cat("Successful finish...\n")
