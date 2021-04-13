@@ -30,7 +30,7 @@ do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstr
 }
 
 #' @keywords internal
-do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
+do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, method) {
 	genes <- colnames(c_edat)
 	alt_samp <- !is.null(N_genes)
 
@@ -45,9 +45,9 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 	  t_m <- c_edat[iter$samples_t, g_sbst]
 
 	  bg_r_cv <- r_m %>%
-	      lower_tri_erase_mods_cor(mods=mods)
+	      lower_tri_erase_mods_cor(mods=mods, method=method)
 	  bg_t_cv <- t_m %>%
-	      lower_tri_erase_mods_cor(mods=mods)
+	      lower_tri_erase_mods_cor(mods=mods, method=method)
 
 	  iter$bg_r <- bg_r_cv %>%
 	      `^`(2) %>%
@@ -72,7 +72,7 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL) {
 }
 
 #' @keywords internal
-do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type) {
+do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, method) {
 
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
@@ -85,7 +85,8 @@ do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type) {
                                           t_edat=t_edat[,mod],
                                           sh_r=sh_r,
                                           sh_t=sh_t,
-                                          mdc_type=mdc_type)
+                                          mdc_type=mdc_type,
+                                          method=method)
     })
 
     iter_output <- list(mods_mdc)

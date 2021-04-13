@@ -40,6 +40,7 @@ conan <- function(eset,
 				  FDR_thresh=0.05,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
+                  corr_type = "pearson",
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
@@ -145,10 +146,10 @@ conan <- function(eset,
 			t_m <- t_edat[,g_sbst]
 
 			# Background connectivity vector
-        	cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
+        	cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list, method=corr_type)))
 
         	# Background connectivity vector
-        	cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+        	cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list, method=corr_type)))
         	
         }
         
@@ -198,10 +199,10 @@ conan <- function(eset,
     l_cvs <- function(mod_genes, r_edat, t_edat, sh_r_bg, sh_t_bg) {
         
         cv_r <- r_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg,method=corr_type)
 
         cv_t <- t_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg,method=corr_type)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
@@ -259,7 +260,8 @@ conan <- function(eset,
                                 mods=mod_list, 
                                 mean_correct=mean_correct, 
                                 N_genes=N_genes, 
-                                mc.cores=cores)
+                                mc.cores=cores,
+                                method = corr_type)
 
 
     # 3.
@@ -269,7 +271,8 @@ conan <- function(eset,
                          c_edat = c_edat,
                          mods = mod_list,
                          mdc_type = mdc_type,
-                         mc.cores = cores)
+                         mc.cores = cores,
+                         method = corr_type)
     #
     #
     # End paralellization
