@@ -25,10 +25,15 @@ square <- function(x) {
 }
 
 #' @keywords internal
+multiply <- function(x, m) {
+    x*m
+}
+
+#' @keywords internal
 erase_mods <- function(mat, mods) {
-	genes <- rownames(mat)
+    genes <- rownames(mat)
     for (i in mods) {
-	  s <- i[i %in% genes]
+      s <- i[i %in% genes]
       mat[s,s] <- NA
     }
     return(mat)

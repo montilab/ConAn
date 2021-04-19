@@ -4,7 +4,7 @@ Differential Network Connectivity Analysis
 ### Install with devtools
 ```R
 library(devtools)
-devtools::install_github("anfederico/ConAn")
+devtools::install_github("montilab/ConAn")
 ```
 
 ```{r}
