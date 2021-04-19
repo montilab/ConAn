@@ -1,24 +1,24 @@
 #' @keywords internal
-atanh_lower_tri_cor <- function(edat, method="pearson") {
+atanh_lower_tri_cor <- function(edat, corr_func) {
     edat %>%
-    stats::cor(method=method) %>%
+    corr_func %>%
     lower_tri(diag=FALSE) %>%
     remove_na() %>%
     atanh()
 }
 
 #' @keywords internal
-bg_corrected_atanh_lower_tri_cor <- function(edat, sh, method) {
+bg_corrected_atanh_lower_tri_cor <- function(edat, sh, corr_func) {
     edat %>%
-    atanh_lower_tri_cor(method=method) %>%
+    atanh_lower_tri_cor(corr_func=corr_func) %>%
     `*`(sh)
         
 }
 
 #' @keywords internal
-atanh_lower_tri_erase_mods_cor <- function(edat, mods, method="pearson") {
+atanh_lower_tri_erase_mods_cor <- function(edat, mods, corr_func) {
     edat %>%
-    stats::cor(method=method) %>%
+    corr_func %>%
     erase_mods(mods=mods) %>%
     lower_tri(diag=FALSE) %>%
     remove_na() %>%
@@ -26,14 +26,14 @@ atanh_lower_tri_erase_mods_cor <- function(edat, mods, method="pearson") {
 }
 
 #' @keywords internal
-modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_type, method) {
+modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_type, corr_func) {
     
-    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, sh_r, method) %>%
+    mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, sh_r, corr_func) %>%
             tanh() %>%
             square() %>%
             mean() 
 
-    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, sh_t, method) %>%
+    mc_t <- bg_corrected_atanh_lower_tri_cor(t_edat, sh_t, corr_func) %>%
             tanh() %>%
             square() %>%
             mean()
@@ -47,9 +47,9 @@ modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_ty
 }
 
 #' @keywords internal
-lower_tri_erase_mods_cor <- function(edat, mods, method="pearson") {
+lower_tri_erase_mods_cor <- function(edat, mods, corr_func) {
     edat %>%
-        stats::cor(method=method) %>%
+        stats::cor(corr_func=corr_func) %>%
         erase_mods(mods=mods) %>%
         lower_tri(diag=FALSE) %>%
         remove_na()

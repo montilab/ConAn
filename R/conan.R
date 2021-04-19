@@ -40,7 +40,7 @@ conan <- function(eset,
 				  FDR_thresh=0.05,
                   cores=1,
                   mdc_type=c("fraction", "difference"),
-                  corr_type = "pearson",
+                  corr = cor(method="pearson"),
                   plotting=FALSE,
                   reporting=FALSE,
                   report_path="report.Rmd") {
