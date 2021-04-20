@@ -3,7 +3,7 @@
 #' @param mat A matrix.
 #' @param diag Logical. Should the diagonal be included?
 #' @return A vector for values.
-#'
+
 #' @keywords internal
 lower_tri <- function(mat, diag) {
         mat[lower.tri(mat, diag=diag)]
