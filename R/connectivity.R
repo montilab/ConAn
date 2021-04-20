@@ -1,6 +1,6 @@
 #' @keywords internal
 atanh_lower_tri_cor <- function(edat, corr_func) {
-    print("atanh_lower_tri_cor")
+
     edat %>%
     corr_func() %>%
     lower_tri(diag=FALSE) %>%
@@ -10,7 +10,7 @@ atanh_lower_tri_cor <- function(edat, corr_func) {
 
 #' @keywords internal
 bg_corrected_atanh_lower_tri_cor <- function(edat, sh, corr_func) {
-    print("bg_corrected_atanh_lower_tri_cor")
+
     edat %>%
     atanh_lower_tri_cor(corr_func=corr_func) %>%
     `*`(sh)
@@ -19,7 +19,7 @@ bg_corrected_atanh_lower_tri_cor <- function(edat, sh, corr_func) {
 
 #' @keywords internal
 atanh_lower_tri_erase_mods_cor <- function(edat, mods, corr_func) {
-    print("atanh_lower_tri_erase_mods_cor")
+
     edat %>%
     corr_func() %>%
     erase_mods(mods=mods) %>%
@@ -30,7 +30,6 @@ atanh_lower_tri_erase_mods_cor <- function(edat, mods, corr_func) {
 
 #' @keywords internal
 modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_type, corr_func) {
-    print("modular_differential_connectivity")
     
     mc_r <- bg_corrected_atanh_lower_tri_cor(r_edat, sh_r, corr_func) %>%
             tanh() %>%
@@ -52,7 +51,7 @@ modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_ty
 
 #' @keywords internal
 lower_tri_erase_mods_cor <- function(edat, mods, corr_func) {
-    print("lower_tri_erase_mods_cor")
+    
     edat %>%
         corr_func() %>%
         erase_mods(mods=mods) %>%
