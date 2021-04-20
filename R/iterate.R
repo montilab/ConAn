@@ -3,6 +3,7 @@
 #' @param r_samples Control sample names
 #' @param t_samples Condition sample names
 #' @param method Sampling method can be either c("bootstrap", "permutation")
+#' @param corr_func Correlation function
 #'
 #' @return Return shuffled samples for reference and test expression sets
 #'
@@ -30,7 +31,7 @@ do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstr
 }
 
 #' @keywords internal
-do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, method) {
+do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, corr_func) {
 	genes <- colnames(c_edat)
 	alt_samp <- !is.null(N_genes)
 
@@ -45,9 +46,9 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, method
 	  t_m <- c_edat[iter$samples_t, g_sbst]
 
 	  bg_r_cv <- r_m %>%
-	      lower_tri_erase_mods_cor(mods=mods, method=method)
+	      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func)
 	  bg_t_cv <- t_m %>%
-	      lower_tri_erase_mods_cor(mods=mods, method=method)
+	      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func)
 
 	  iter$bg_r <- bg_r_cv %>%
 	      `^`(2) %>%
@@ -72,7 +73,7 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, method
 }
 
 #' @keywords internal
-do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, method) {
+do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, corr_func) {
 
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
@@ -86,7 +87,7 @@ do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, met
                                           sh_r=sh_r,
                                           sh_t=sh_t,
                                           mdc_type=mdc_type,
-                                          method=method)
+                                          corr_func=corr_func)
     })
 
     iter_output <- list(mods_mdc)
