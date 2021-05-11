@@ -2,46 +2,48 @@
 #' @import ggplot2
 #'
 #' @export
-plot_connectivity <- function(output,N_genes) {
-  mapply(function(cv_r, cv_t, mod_name){
-
+plot_connectivity <- function(output) {
+ mapply(function(cv_r, cv_t, mod_name){
+   r_name <- output$args$ctrl
+   t_name <- output$args$cond
     
-    r_name <- output$args$ctrl
-    t_name <- output$args$cond
-    
-    low_r_IQR <- quantile(cv_r, 0.25) - (1.5 * (quantile(cv_r, 0.75) - quantile(cv_r, 0.25)))
-    high_r_IQR <- quantile(cv_r, 0.75) + (1.5 * (quantile(cv_r, 0.75) - quantile(cv_r, 0.25)))
-    low_t_IQR <- quantile(cv_t, 0.25) - (1.5 * (quantile(cv_t, 0.75) - quantile(cv_t, 0.25)))
-    high_t_IQR <- quantile(cv_t, 0.75) + (1.5 * (quantile(cv_t, 0.75) - quantile(cv_t, 0.25)))
-    
-    df <- data.frame(Median = c(median(cv_r), median(cv_t)),
-                      Min = c(min(cv_r[cv_r >= low_r_IQR]), min(cv_t[cv_t >= low_t_IQR])),
-                      Lower = c(quantile(cv_r, 0.25), quantile(cv_t, 0.25)),
-                      Upper = c(quantile(cv_r, 0.75), quantile(cv_t, 0.75)),
-                      Max = c(max(cv_r[cv_r <= high_r_IQR]), max(cv_t[cv_t <= high_t_IQR])),
-                      Group = c(r_name, t_name))
+   quartile_r_1 <- quantile(cv_r, 0.25)
+   quartile_r_3 <- quantile(cv_r, 0.75)
+   quartile_t_1 <- quantile(cv_t, 0.25)
+   quartile_t_3 <- quantile(cv_t, 0.75)
+   low_r_IQR <- quartile_r_1 - (1.5 * (quartile_r_3 - quartile_r_1))
+   high_r_IQR <- quartile_r_3 + (1.5 * (quartile_r_3 - quartile_r_1))
+   low_t_IQR <- quartile_t_1 - (1.5 * (quartile_t_3 - quartile_t_1))
+   high_t_IQR <- quartile_t_3 + (1.5 * (quartile_t_3 - quartile_t_1))
+   df <- data.frame(Median = c(median(cv_r), median(cv_t)),
+                    Min = c(low_r_IQR, low_t_IQR),
+                    Lower = c(quartile_r_1, quartile_t_1),
+                    Upper = c(quartile_r_3, quartile_t_3),
+                    Max = c(high_r_IQR, high_t_IQR),
+                    Group = c(r_name, t_name))
     
     if (output$args$mean_correct) {
-      
-      cv_r_bg <- unlist(output$bg$cv_r_bg)
-      cv_t_bg <- unlist(output$bg$cv_t_bg)
-
-      
+      cv_r_bg <- unlist(output$bg_metrics$means_r)
+      cv_t_bg <- unlist(output$bg_metrics$means_t)
       r_bg_name <- paste(r_name, "(BG)")
       t_bg_name <- paste(t_name, "(BG)")
       
-      low_rbg_IQR <- quantile(cv_r_bg, 0.25) - (1.5 * (quantile(cv_r_bg, 0.75) - quantile(cv_r_bg, 0.25)))
-      high_rbg_IQR <- quantile(cv_r_bg, 0.75) + (1.5 * (quantile(cv_r_bg, 0.75) - quantile(cv_r_bg, 0.25)))
-      low_tbg_IQR <- quantile(cv_t_bg, 0.25) - (1.5 * (quantile(cv_t_bg, 0.75) - quantile(cv_t_bg, 0.25)))
-      high_tbg_IQR <- quantile(cv_t_bg, 0.75) + (1.5 * (quantile(cv_t_bg, 0.75) - quantile(cv_t_bg, 0.25)))
-      
-      df <- rbind(df, data.frame(Median = c(median(cv_r_bg), median(cv_t_bg)),
-                        Min = c(min(cv_r_bg[cv_r_bg >= low_rbg_IQR]), min(cv_t_bg[cv_t_bg >= low_tbg_IQR])),
-                        Lower = c(quantile(cv_r_bg, 0.25), quantile(cv_t_bg, 0.25)),
-                        Upper = c(quantile(cv_r_bg, 0.75), quantile(cv_t_bg, 0.75)),
-                        Max = c(max(cv_r_bg[cv_r_bg <= high_rbg_IQR]), max(cv_t_bg[cv_t_bg <= high_tbg_IQR])),
+      quartile_rbg_1 <- quantile(cv_r_bg, 0.25)
+      quartile_rbg_3 <- quantile(cv_r_bg, 0.75)
+      quartile_tbg_1 <- quantile(cv_t_bg, 0.25)
+      quartile_tbg_3 <- quantile(cv_t_bg, 0.75)
 
-                        Group = c(r_bg_name, t_bg_name)))
+      low_rbg_IQR <- quartile_rbg_1 - (1.5 * (quartile_rbg_3 - quartile_rbg_1))
+      high_rbg_IQR <- quartile_rbg_3 + (1.5 * (quartile_rbg_3 - quartile_rbg_1))
+      low_tbg_IQR <- quartile_tbg_1 - (1.5 * (quartile_tbg_3 - quartile_tbg_1))
+      high_tbg_IQR <- quartile_tbg_3 + (1.5 * (quartile_tbg_3 - quartile_tbg_1))
+    
+      df <- rbind(df, data.frame(Median = c(median(cv_r_bg), median(cv_t_bg)),
+                                 Min = c(low_rbg_IQR, low_tbg_IQR),
+                                 Lower = c(quartile_rbg_1, quartile_tbg_1),
+                                 Upper = c(quartile_rbg_3, quartile_tbg_3),
+                                 Max = c(high_rbg_IQR, high_tbg_IQR),
+                                 Group = c(r_bg_name, t_bg_name)))
     }
     
     # Wes Anderson: Darjeeling
@@ -93,6 +95,3 @@ plot_permutations <- function(output) {
     
   }, mdc_permutated, output$stat$mods_mdc_adj, mod_names, SIMPLIFY=FALSE)
 }
-
-
-

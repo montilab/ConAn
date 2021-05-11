@@ -4,8 +4,13 @@
 \alias{do_sampling}
 \title{Randomly Shuffle Samples}
 \usage{
-do_sampling(iter, c_samples, r_samples, t_samples,
-  method = c("bootstrap", "permutation"))
+do_sampling(
+  iter,
+  c_samples,
+  r_samples,
+  t_samples,
+  method = c("bootstrap", "permutation")
+)
 }
 \arguments{
 \item{c_samples}{Combined control and condition sample names}

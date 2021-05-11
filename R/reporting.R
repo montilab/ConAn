@@ -2,14 +2,10 @@
 #' @import hypeR
 #' @import ggpubr
 #' @import kableExtra
-#' @keywords internal
-report <- function(output, mod_list) {
-  
-  genesets <- msigdb_gsets("Homo sapiens", "C2", "CP:KEGG", clean=TRUE)
-  mhyp <- hypeR(mod_list, genesets, test="hypergeometric", background=30000)
-  REACTOME <- msigdb_gsets(species="Homo sapiens", category="C2", subcategory="CP:REACTOME")
-  mhyp_R <- hypeR(mod_list, REACTOME, test="hypergeometric", background=30000)
-
+#' @import DT
+#'
+#' @export
+report <- function(output, FDR_thresh, mods, file_path) {
   
   r_name <- output$args$ctrl
   t_name <- output$args$cond
@@ -100,10 +96,22 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4,0.6)) #ggarrange(p1, p2, ncol=2, widths=c
 ```
 "
 
+  mod_tabset <- "
+# Modules
+##  {.tabset .tabset-fade}
+  "
+  
+  mod_tab <- "
+### {1}
+```{r {1}_mod}
+ DT::datatable(cbind(genes=mods[['{1}']]), options = list(scrollX = TRUE, paging=TRUE))
+```
+"
+
   rmd_results <- "
 # Results
 ```{r}
-mdc
+ DT::datatable(mdc, options = list(scrollX = TRUE, paging=TRUE))
 ```
 "
 
@@ -114,22 +122,42 @@ p2 <- hyp_dots(mhyp, merge=TRUE, fdr=0.05, title='KEGG')
 p3 <- hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome')
 
 ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
+=======
+# hypeR Enrichment Analysis and Significantly Differential Modules
+```{r}
+p1 <- output$plots$hypeR_KEGG
+p2 <- output$plots$hypeR_REAC
+p3 <- output$plots$hypeR_BIOC
+```
+##  {.tabset .tabset-fade}
+### KEGG
+```{r KEGG, fig.width=9, fig.align='center'}
+p1
+```
+
+### REACTOME
+```{r REACTOME, fig.width=9, fig.align='center'}
+p2
+```
+
+### BIOCARTA
+```{r BIOCARTA, fig.width=9, fig.align='center'}
+p3
 ```
 "
 
   rmd_sigresults <- "
 # Significant Results
 ```{r}
-sigmdc
+ DT::datatable(sigmdc, options = list(scrollX = TRUE, paging=TRUE))
 ```
 "
 
-
-  file_path <- output$args$report_path
-
-  write(rmd_config, file=file_path, append=FALSE)
+  write(rmd_knitr, file=file_path, append=FALSE)
+  write(rmd_config, file=file_path, append=TRUE)
   write(rmd_arguments, file=file_path, append=TRUE)
-  write(rmd_knitr, file=file_path, append=TRUE)
+  write(rmd_results, file=file_path, append=TRUE)
+  write(rmd_sigresults, file=file_path, append=TRUE)
   if (output$args$plotting) {
       write(rmd_tabset, file=file_path, append=TRUE)
 
@@ -139,13 +167,19 @@ sigmdc
           write(file=file_path, append=TRUE)
       }
   }
-  write(rmd_results, file=file_path, append=TRUE)
-  write(rmd_hyp, file=file_path, append=TRUE)
-  write(rmd_sigresults, file=file_path, append=TRUE)
+  
+  write(mod_tabset, file=file_path, append=TRUE)
+  
+  for (tab in output$data$mod_names) {
+    mod_tab %>%
+      format_str(tab) %>%
+      write(file=file_path, append=TRUE)
+  }
+  if(!is.na(output$plots$hypeR_KEGG)) {
+    write(rmd_hyp, file=file_path, append=TRUE)
+  }
   
   rmarkdown::render(input=file_path,
                     output_format="html_document",
                     output_file=paste(file_path, "html", sep="."))
 }
-  
-

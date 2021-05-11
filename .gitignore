@@ -1,4 +1,6 @@
 dev/debugging.R
+data-raw/
+report*
 report/*
 
 # General

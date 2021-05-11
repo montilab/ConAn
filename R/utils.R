@@ -3,7 +3,7 @@
 #' @param mat A matrix.
 #' @param diag Logical. Should the diagonal be included?
 #' @return A vector for values.
-#'
+
 #' @keywords internal
 lower_tri <- function(mat, diag) {
         mat[lower.tri(mat, diag=diag)]
@@ -25,10 +25,15 @@ square <- function(x) {
 }
 
 #' @keywords internal
+multiply <- function(x, m) {
+    x*m
+}
+
+#' @keywords internal
 erase_mods <- function(mat, mods) {
-	genes <- rownames(mat)
+    genes <- rownames(mat)
     for (i in mods) {
-	  s <- i[i %in% genes]
+      s <- i[i %in% genes]
       mat[s,s] <- NA
     }
     return(mat)
