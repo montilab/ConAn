@@ -36,7 +36,8 @@ report <- function(output, FDR_thresh, mods, file_path) {
   }
   
   sigmdc <- mdc %>% 
-    dplyr::filter(FDR <= FDR_thresh)
+    dplyr::filter(FDR <= 0.05)
+
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
@@ -89,8 +90,9 @@ options(scipen=1, digits=3)
 ### {1} 
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
-#p2 <- output$plots$permutations[['{1}']]
-ggarrange(p1, ncol=1, widths=c(0.5)) #ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+p2 <- output$plots$permutations[['{1}']]
+ggarrange(p1, p2, ncol=2, widths=c(0.4,0.6)) #ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+
 ```
 "
 
@@ -114,6 +116,13 @@ ggarrange(p1, ncol=1, widths=c(0.5)) #ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.
 "
 
   rmd_hyp <- "
+### hypeR Enrichment Analysis and Significantly Differential Modules
+```{r {2}, fig.width=15, fig.align='center'}
+p2 <- hyp_dots(mhyp, merge=TRUE, fdr=0.05, title='KEGG')
+p3 <- hyp_dots(mhyp_R, merge=TRUE, fdr=0.05, title='Reactome')
+
+ggarrange(p2, p3, ncol=2, widths=c(0.5, 0.5))
+=======
 # hypeR Enrichment Analysis and Significantly Differential Modules
 ```{r}
 p1 <- output$plots$hypeR_KEGG
