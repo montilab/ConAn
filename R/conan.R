@@ -10,11 +10,6 @@
 #' @param mean_correct Correct with background connectivity
 #' @param N_genes Number of randomly selected genes to be used during each iteration
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
-#' @param plot_hypeR boolean, whether to include hypeR plots in the report
-#' @param species the species to use for hypeR plots
-#' @param category  category parameter for hypeR plots
-#' @param p_val_thresh thresholds used in hypeR plotting
-#' @param FDR_thresh FDR threshold for modules and hypeR (if relevant)
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
 #'
@@ -24,7 +19,6 @@
 #' @import magrittr
 #' @import stats
 #' @import parallel
-#' @import hypeR
 #'
 #' @export
 conan <- function(eset,
@@ -37,11 +31,6 @@ conan <- function(eset,
                   mean_correct=FALSE,
                   N_genes=NULL,
                   iter_bg=1,
-                  plot_hypeR=FALSE,
-                  species=NULL,
-                  category=NULL,
-                  p_val_thresh=c(0.1, 0.05, 0.01),
-                  FDR_thresh=0.05,
                   cores=1,
                   mdc_type=c("difference", "fraction"),
                   plotting=FALSE) {
@@ -327,20 +316,6 @@ conan <- function(eset,
         cat("Generating plots...\n")
         output$plots <- list(connectivity=plot_connectivity(output),
                              permutations=plot_permutations(output))
-        if(plot_hypeR) {
-          sigmods <- mod_list[mdc_fdr < FDR_thresh]
-          pval_levels <- p_val_levels(mdc_fdr, p_val_thresh)
-          names(sigmods) <- rename_mod_names(labels(sigmods), mdc_fdr[mdc_fdr < FDR_thresh])
-          BIOCARTA <- msigdb_gsets(species=species, category=category, subcategory="CP:BIOCARTA")
-          KEGG     <- msigdb_gsets(species=species, category=category, subcategory="CP:KEGG")
-          REACTOME <- msigdb_gsets(species=species, category=category, subcategory="CP:REACTOME")
-          mhyp_KEGG <- hypeR(sigmods, KEGG, test="hypergeometric", background=30000)
-          mhyp_BIOC <- hypeR(sigmods, BIOCARTA, test="hypergeometric", background=30000)
-          mhyp_REAC <- hypeR(sigmods, REACTOME, test="hypergeometric", background=30000)
-          output$plots$hypeR_KEGG <- hyp_dots(mhyp_KEGG, merge=TRUE, fdr=FDR_thresh, title="KEGG")
-          output$plots$hypeR_REAC <- hyp_dots(mhyp_REAC, merge=TRUE, fdr=FDR_thresh, title="REACTOME")
-          output$plots$hypeR_BIOC <- hyp_dots(mhyp_BIOC, merge=TRUE, fdr=FDR_thresh, title="BIOCARTA")
-        }
     }
     
     # Cleanup

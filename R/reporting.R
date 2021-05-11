@@ -1,5 +1,4 @@
 #' @import magrittr
-#' @import hypeR
 #' @import ggpubr
 #' @import kableExtra
 #' @import DT
@@ -113,30 +112,6 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
-  rmd_hyp <- "
-# hypeR Enrichment Analysis and Significantly Differential Modules
-```{r}
-p1 <- output$plots$hypeR_KEGG
-p2 <- output$plots$hypeR_REAC
-p3 <- output$plots$hypeR_BIOC
-```
-##  {.tabset .tabset-fade}
-### KEGG
-```{r KEGG, fig.width=9, fig.align='center'}
-p1
-```
-
-### REACTOME
-```{r REACTOME, fig.width=9, fig.align='center'}
-p2
-```
-
-### BIOCARTA
-```{r BIOCARTA, fig.width=9, fig.align='center'}
-p3
-```
-"
-
   rmd_sigresults <- "
 # Significant Results
 ```{r}
@@ -165,9 +140,6 @@ p3
     mod_tab %>%
       format_str(tab) %>%
       write(file=file_path, append=TRUE)
-  }
-  if(!is.na(output$plots$hypeR_KEGG)) {
-    write(rmd_hyp, file=file_path, append=TRUE)
   }
   
   rmarkdown::render(input=file_path,
