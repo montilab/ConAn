@@ -62,7 +62,6 @@ plot_connectivity <- function(output) {
     
   }, output$stat$mods_cv_r, output$stat$mods_cv_t, output$data$mod_names, SIMPLIFY=FALSE)
 }
-
 #' @import magrittr
 #' @import ggplot2
 #'

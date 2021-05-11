@@ -35,7 +35,8 @@ report <- function(output, FDR_thresh, mods, file_path) {
   }
   
   sigmdc <- mdc %>% 
-    dplyr::filter(FDR <= FDR_thresh)
+    dplyr::filter(FDR <= 0.05)
+
 
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
@@ -90,6 +91,7 @@ options(scipen=1, digits=3)
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
 ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+
 ```
 "
 
@@ -112,7 +114,6 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
-  rmd_sigresults <- "
 # Significant Results
 ```{r}
  DT::datatable(sigmdc, options = list(scrollX = TRUE, paging=TRUE))
