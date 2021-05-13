@@ -30,7 +30,7 @@ test_that("subtract_BG works", {
   expect_equal(subtract, subtractfn)
 })
 
-test_that("utils:erase_mods works" {
+test_that("utils:erase_mods works", {
   sampledata <- readRDS(file.path(system.file("extdata", package="conAn"), "sampledata.rds"))
   mod_list <- readRDS(file.path(system.file("extdata", package="conAn"), "samplemods.rds"))
   mat <- cor(t(exprs(sampledata)))
