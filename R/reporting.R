@@ -114,6 +114,7 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
+  rmd_sigresults <- "
 # Significant Results
 ```{r}
  DT::datatable(sigmdc, options = list(scrollX = TRUE, paging=TRUE))
