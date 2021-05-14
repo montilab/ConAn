@@ -133,10 +133,10 @@ conan <- function(eset,
             t_m <- t_edat[,g_sbst]
 
             # Background connectivity vector
-            cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list)))
+            cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list, corr_func=FUN)))
 
             # Background connectivity vector
-            cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list)))
+            cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list, corr_func=FUN)))
         }
         
         # Background module connectivity
@@ -185,10 +185,10 @@ conan <- function(eset,
     l_cvs <- function(mod_genes, r_edat, t_edat, sh_r_bg, sh_t_bg) {
         
         cv_r <- r_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg,corr_func=FUN,...)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_r_bg, corr_func=FUN,...)
 
         cv_t <- t_edat[,mod_genes] %>%
-                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg,corr_func=FUN,...)
+                bg_corrected_atanh_lower_tri_cor(sh=sh_t_bg, corr_func=FUN,...)
 
         return(cvs = list(cv_r=cv_r, cv_t=cv_t))
     }
