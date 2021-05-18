@@ -110,6 +110,8 @@ conan <- function(eset,
                         sim_type=sim_type,
                         iter=iter,
                         mean_correct=mean_correct,
+			N_genes=N_genes,
+			iter_bg=iter_bg,
                         cores=cores,
                         mdc_type=mdc_type,
                         plotting=plotting)
