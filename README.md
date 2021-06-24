@@ -29,8 +29,8 @@ output <- conan(eset=eset,
                 mean_correct=TRUE,
                 cores=1,
                 mdc_type=c("fraction", "difference")[[2]],
-                plotting=T,
-                reporting=T,
+                plotting=TRUE,
+                reporting=TRUE,
                 report_path="report.Rmd")
 
 ```
