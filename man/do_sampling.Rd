@@ -20,6 +20,8 @@ do_sampling(
 \item{t_samples}{Condition sample names}
 
 \item{method}{Sampling method can be either c("bootstrap", "permutation")}
+
+\item{corr_func}{Correlation function}
 }
 \value{
 Return shuffled samples for reference and test expression sets

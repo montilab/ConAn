@@ -17,7 +17,9 @@ conan(
   iter_bg = 1,
   cores = 1,
   mdc_type = c("difference", "fraction"),
-  plotting = FALSE
+  plotting = FALSE,
+  FUN = cor,
+  ...
 )
 }
 \arguments{
@@ -44,6 +46,8 @@ conan(
 \item{cores}{Number of cores available for parallelization}
 
 \item{mdc_type}{Method for calculating difference in connectivity can be either c("fraction", "difference")}
+
+\item{FUN}{Function for calculating correlation}
 }
 \value{
 A list of statistics and plots resulting from the analysis
