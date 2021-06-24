@@ -9,13 +9,14 @@ Maintainer:
     Anthony Federico <anfed@bu.edu>
 Description:
     A package to measure differential connectivity of multiple networks between two conditions with visualization and robust statistical testing.
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.6.0)
 Imports: 
     Biobase,
     magrittr,
     ggplot2,
     rmarkdown,
     ggpubr,
+    DT,
     kableExtra,
     dplyr,
     knitr
