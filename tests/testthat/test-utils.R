@@ -31,12 +31,10 @@ test_that("subtract_BG works", {
 })
 
 test_that("utils:erase_mods works", {
-  sampledata <- readRDS(file.path(system.file("extdata", package="conAn"), "sampledata.rds"))
-  mod_list <- readRDS(file.path(system.file("extdata", package="conAn"), "samplemods.rds"))
+  sampledata <- readRDS(file.path(system.file("extdata", package="ConAn"), "sampledata.rds"))
+  mod_list <- readRDS(file.path(system.file("extdata", package="ConAn"), "samplemods.rds"))
   mat <- cor(t(exprs(sampledata)))
   testfunc <- erase_mods(mat, mod_list)
   expect_is(testfunc, "matrix")
   expect_true(is.na(testfunc[1,1]))
 })
-
-
