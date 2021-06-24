@@ -11,9 +11,9 @@ opt_shrink <- function(sf, targ, cv) {
 
     zTrans <- atanh(cv) * sf
     est <- atanh(cv) %>%
-        `*`(sf) %>%
+        multiply(sf) %>%
         tanh %>%
-        `^`(2) %>%
+        square %>%
         mean
     abs(targ - est)
 

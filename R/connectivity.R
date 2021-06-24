@@ -13,7 +13,7 @@ bg_corrected_atanh_lower_tri_cor <- function(edat, sh, corr_func,...) {
 
     edat %>%
     atanh_lower_tri_cor(corr_func=corr_func,...) %>%
-    `*`(sh)
+    multiply(sh)
         
 }
 
@@ -26,6 +26,7 @@ atanh_lower_tri_erase_mods_cor <- function(edat, mods, corr_func,...) {
     lower_tri(diag=FALSE) %>%
     remove_na() %>%
     atanh()
+    
 }
 
 #' @keywords internal
@@ -47,15 +48,17 @@ modular_differential_connectivity <- function(r_edat, t_edat, sh_r, sh_t, mdc_ty
     if (mdc_type == "difference") {
         return(mc_t - mc_r)
     }
+
 }
 
 #' @keywords internal
 lower_tri_erase_mods_cor <- function(edat, mods, corr_func,...) {
     
     edat %>%
-        corr_func(...) %>%
-        erase_mods(mods=mods) %>%
-        lower_tri(diag=FALSE) %>%
-        remove_na()
+    corr_func(...) %>%
+    erase_mods(mods=mods) %>%
+    lower_tri(diag=FALSE) %>%
+    remove_na()
+
 }
 

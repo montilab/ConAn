@@ -51,11 +51,11 @@ do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, corr_f
 	      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func,...)
 
     iter$bg_r <- bg_r_cv %>%
-        `^`(2) %>%
+        square %>%
         mean
     iter$bg_t <- bg_t_cv %>%
-          `^`(2) %>%
-          mean
+        square %>%
+        mean
 
       # Calculate shrinking factors
     sh_vec <- get_shrink(bg_r_cv, bg_t_cv, iter$bg_r, iter$bg_t)
