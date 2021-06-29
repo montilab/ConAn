@@ -4,7 +4,10 @@
 #' @import DT
 #'
 #' @export
-report <- function(output, FDR_thresh, mods, file_path) {
+report <- function(output, FDR_thresh, mods, file_path) 
+{
+  ## check inputs
+  if (FDR_thresh<=0 || FDR_thresh>=1.0) stop( "FDR_thresh must be in (0,1)")
   
   r_name <- output$args$ctrl
   t_name <- output$args$cond
@@ -35,7 +38,7 @@ report <- function(output, FDR_thresh, mods, file_path) {
   }
   
   sigmdc <- mdc %>% 
-    dplyr::filter(FDR <= 0.05)
+    dplyr::filter(FDR <= FDR_thresh)
 
 
   rmd_config <- "---
