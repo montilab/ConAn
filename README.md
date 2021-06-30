@@ -41,10 +41,11 @@ output <- conan(eset=eset,
                 sim_type=c("bootstrap", "permutation")[[1]],
                 iter=20,
                 mean_correct=TRUE,
+                N_genes=1000,
+                iter_bg=50,
                 cores=1,
                 mdc_type=c("fraction", "difference")[[2]],
                 plotting=TRUE,
-                reporting=TRUE,
-                report_path="report.Rmd")
+                FUN = c(cor, bicor)[[1]])
 
 ```
