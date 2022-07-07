@@ -1,10 +1,25 @@
+#' @title Differential Connectivity Report
+#' @description Generate an rmarkdown report of the results returned by conan
+#' @param output The object returned by a call to conan
+#' @param FDR_thresh Max fdr to report as significant
+#' @param mods The modules to report on (default is all)
+#' @param file_path Where to save the rmarkdown (an '.html' will be generated as well)
+#' @param digits Number of significant digits to display in the tables
+#'
 #' @import magrittr
 #' @import ggpubr
 #' @import kableExtra
 #' @import DT
 #'
 #' @export
-report <- function(output, FDR_thresh, mods, file_path) 
+report <- function(
+  output, 
+  FDR_thresh, 
+  mods=output$data$mod_list, 
+  file_path,
+  digits=2,
+  annotate_mods=FALSE
+) 
 {
   ## check inputs
   if (FDR_thresh<=0 || FDR_thresh>=1.0) stop( "FDR_thresh must be in (0,1)")
@@ -12,12 +27,13 @@ report <- function(output, FDR_thresh, mods, file_path)
   r_name <- output$args$ctrl
   t_name <- output$args$cond
 
+  ## Module Differential Connectivity table
   mdc <- as.data.frame(output$data$mod_n)
-
   mdc <- cbind(mdc, as.data.frame(output$stat[c("mods_mc_r",
                                                 "mods_mc_t",
                                                 "mods_mdc_adj")]))
-  mdc <- cbind(mdc, output$significance)
+  mdc <- cbind(mdc, output$significance) %>%
+    dplyr::mutate(across(where(is.numeric),signif,digits=digits))
 
   if (output$args$sim_type == "bootstrap") {
       colnames(mdc) <- c("Gene Size",
@@ -36,11 +52,16 @@ report <- function(output, FDR_thresh, mods, file_path)
                          "P-Value",
                          "FDR")
   }
-  
+  ## MDC table restricted to significant modules
   sigmdc <- mdc %>% 
-    dplyr::filter(FDR <= FDR_thresh)
+    dplyr::filter(FDR <= FDR_thresh) %>%
+    dplyr::mutate(across(where(is.numeric),signif,digits=digits))
 
-
+  ## Annotate modules with fData
+  if ( annotate_mods && ncol(Biobase::fData(output$data$eset))>0 ) {
+    mods <- lapply(mods, function(M) Biobase::fData(output$data$eset)[M,])
+  }
+  ## Start markdown generation
   rmd_config <- "---
 title: 'Differential Connectivity Analysis Report'
 date: 'Report Created: `r Sys.Date()`'
@@ -93,8 +114,7 @@ options(scipen=1, digits=3)
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
-ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
-
+ggpubr:ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
@@ -124,11 +144,12 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
-  write(rmd_knitr, file=file_path, append=FALSE)
   write(rmd_config, file=file_path, append=TRUE)
+  write(rmd_knitr, file=file_path, append=FALSE)
   write(rmd_arguments, file=file_path, append=TRUE)
   write(rmd_results, file=file_path, append=TRUE)
   write(rmd_sigresults, file=file_path, append=TRUE)
+  
   if (output$args$plotting) {
       write(rmd_tabset, file=file_path, append=TRUE)
 
@@ -138,7 +159,6 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
           write(file=file_path, append=TRUE)
       }
   }
-  
   write(mod_tabset, file=file_path, append=TRUE)
   
   for (tab in output$data$mod_names) {
@@ -146,8 +166,13 @@ ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
       format_str(tab) %>%
       write(file=file_path, append=TRUE)
   }
-  
+  html_file <- {
+    if (stringr::str_ends(file_path,"Rmd"))
+      stringr::str_replace(file_path,"Rmd","html")
+    else
+      paste(file_path, "html", sep=".")
+  }
   rmarkdown::render(input=file_path,
                     output_format="html_document",
-                    output_file=paste(file_path, "html", sep="."))
+                    output_file=html_file)
 }
