@@ -74,7 +74,7 @@ output:
 "
 
   rmd_knitr <- "
-```{r setup, echo=FALSE, message=FALSE}
+```{r conan.setup, echo=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 library(kableExtra)
 options(scipen=1, digits=3)
@@ -114,7 +114,7 @@ options(scipen=1, digits=3)
 ```{r {1}, fig.width=9, fig.align='center'}
 p1 <- output$plots$connectivity[['{1}']]
 p2 <- output$plots$permutations[['{1}']]
-ggpubr:ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
+ggpubr::ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
