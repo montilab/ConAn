@@ -144,8 +144,8 @@ ggpubr::ggarrange(p1, p2, ncol=2, widths=c(0.4, 0.6))
 ```
 "
 
-  write(rmd_config, file=file_path, append=TRUE)
-  write(rmd_knitr, file=file_path, append=FALSE)
+  write(rmd_config, file=file_path, append=FALSE)
+  write(rmd_knitr, file=file_path, append=TRUE)
   write(rmd_arguments, file=file_path, append=TRUE)
   write(rmd_results, file=file_path, append=TRUE)
   write(rmd_sigresults, file=file_path, append=TRUE)
