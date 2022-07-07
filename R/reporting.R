@@ -36,7 +36,7 @@ report <- function(
     dplyr::mutate(across(where(is.numeric),signif,digits=digits))
 
   if (output$args$sim_type == "bootstrap") {
-      colnames(mdc) <- c("Gene Size",
+      colnames(mdc) <- c("Module Size",
                          paste(r_name, "Connectivity"),
                          paste(t_name, "Connectivity"),
                          "MDC",
@@ -45,7 +45,7 @@ report <- function(
                          "P-Value",
                          "FDR")
   } else {
-      colnames(mdc) <- c("Gene Size",
+      colnames(mdc) <- c("Module Size",
                          paste(r_name, "Connectivity"),
                          paste(t_name, "Connectivity"),
                          "MDC",
