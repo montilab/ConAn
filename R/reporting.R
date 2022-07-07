@@ -37,8 +37,8 @@ report <- function(
 
   if (output$args$sim_type == "bootstrap") {
       colnames(mdc) <- c("Module Size",
-                         paste(r_name, "\nConnectivity"),
-                         paste(t_name, "\nConnectivity"),
+                         paste(r_name, "Connectivity"),
+                         paste(t_name, "Connectivity"),
                          "MDC",
                          "Stat",
                          "Stdev",
@@ -46,8 +46,8 @@ report <- function(
                          "FDR")
   } else {
       colnames(mdc) <- c("Module Size",
-                         paste(r_name, "\nConnectivity"),
-                         paste(t_name, "\nConnectivity"),
+                         paste(r_name, "Connectivity"),
+                         paste(t_name, "Connectivity"),
                          "MDC",
                          "P-Value",
                          "FDR")
