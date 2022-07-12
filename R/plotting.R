@@ -45,7 +45,6 @@ plot_connectivity <- function(output) {
                                  Max = c(high_rbg_IQR, high_tbg_IQR),
                                  Group = c(r_bg_name, t_bg_name)))
     }
-    
     # Wes Anderson: Darjeeling
     # Blue Red Teal Orange
     palette <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00")
@@ -66,32 +65,33 @@ plot_connectivity <- function(output) {
 #' @import ggplot2
 #'
 #' @export
-plot_permutations <- function(output) {
+plot_permutations <- function(output) 
+{
   mdc_type <- output$args$mdc_type
   mod_names <- output$data$mod_names
   mdc_permutated <- data.frame(output$iter) %>%
     set_colnames(mod_names)
   
-  mapply(function(mdc_permuted, mdc_value, mod_name) {
-    
-    df <- data.frame(permutations=mdc_permuted)
-    
-    if (mdc_type == "fraction") {
-      color <- ifelse(mdc_value > 1, "#FF0000", "#5BBCD6")
-    }
-    if (mdc_type == "difference") {
-      color <- ifelse(mdc_value > 0, "#FF0000", "#5BBCD6")
-    }
-    
-    df %>%
-      ggplot(aes(x=permutations)) +
-      theme_minimal() +
-      geom_density(color="white", fill=color) +
-      ggtitle(mod_name) +
-      ylab("Probability Density") +
-      xlab("Permutated Differential Connectivity") +
-      geom_vline(xintercept=mdc_value, linetype="dotted", size=1) +
-      theme(axis.title.x=element_text(vjust=-1))
-    
-  }, mdc_permutated, output$stat$mods_mdc_adj, mod_names, SIMPLIFY=FALSE)
+  mapply( 
+    function(mdc_permuted, mdc_value, mod_name) 
+    {
+      df <- data.frame(permutations=mdc_permuted)
+      
+      if (mdc_type == "fraction") {
+        color <- ifelse(mdc_value > 1, "#FF0000", "#5BBCD6")
+      }
+      if (mdc_type == "difference") {
+        color <- ifelse(mdc_value > 0, "#FF0000", "#5BBCD6")
+      }
+      df %>%
+        ggplot(aes(x=permutations)) +
+        theme_minimal() +
+        geom_density(color="white", fill=color) +
+        ggtitle(mod_name) +
+        ylab("Probability Density") +
+        xlab("Permutated Differential Connectivity") +
+        geom_vline(xintercept=mdc_value, linetype="dotted", size=1) +
+        theme(axis.title.x=element_text(vjust=-1))
+    }, 
+    mdc_permutated, output$stat$mods_mdc_adj, mod_names, SIMPLIFY=FALSE)
 }

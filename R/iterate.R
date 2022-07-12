@@ -8,73 +8,75 @@
 #' @return Return shuffled samples for reference and test expression sets
 #'
 #' @keywords internal
-do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstrap", "permutation")) {
-    c_n <- length(c_samples)
-    r_n <- length(r_samples)
-    t_n <- length(t_samples)
-
-    if (method == "bootstrap") {
-        r_samples <- r_samples[sample(1:r_n, r_n, replace=TRUE)]
-        t_samples <- t_samples[sample(1:t_n, t_n, replace=TRUE)]
-    }
-    if (method == "permutation") {
-        Sample <- sample(1:c_n, c_n)
-        r_samples <- c_samples[Sample[1:r_n]]
-        t_samples <- c_samples[Sample[(r_n+1):(r_n+t_n)]]
-    }
-
-    output <- list()
-    output[['samples_r']] <- match(r_samples, c_samples)
-    output[['samples_t']] <- match(t_samples, c_samples)
-
-    return(output)
-}
-
-#' @keywords internal
-do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, corr_func,...) {
-	genes <- colnames(c_edat)
-	alt_samp <- !is.null(N_genes)
-
-  if(alt_samp) {
-    if(N_genes > length(genes)) { stop(paste("N_genes value", N_genes, "is greater than the", length(genes), "number of genes in ExpressionSet object")) }
+do_sampling <- function(iter, c_samples, r_samples, t_samples, method=c("bootstrap", "permutation")) 
+{
+  c_n <- length(c_samples)
+  r_n <- length(r_samples)
+  t_n <- length(t_samples)
+  
+  if (method == "bootstrap") {
+    r_samples <- r_samples[sample(seq_len(r_n), r_n, replace=TRUE)]
+    t_samples <- t_samples[sample(seq_len(t_n), t_n, replace=TRUE)]
   }
-
-    if (mean_correct) {
-      g_sbst <- if (alt_samp) sample(1:length(genes), N_genes) else 1:length(genes)
-
-      r_m <- c_edat[iter$samples_r, g_sbst]
+  if (method == "permutation") {
+    Sample <- sample(seq_len(c_n), c_n)
+    r_samples <- c_samples[Sample[seq_len(r_n)]]
+    t_samples <- c_samples[Sample[seq(r_n+1,r_n+t_n)]]
+  }
+  output <- list()
+  output[['samples_r']] <- match(r_samples, c_samples)
+  output[['samples_t']] <- match(t_samples, c_samples)
+  
+  return(output)
+}
+#' @title Compute Background
+#' @keywords internal
+do_background <- function(iter, c_edat, mods, mean_correct, N_genes=NULL, corr_func,...) 
+{
+  genes <- colnames(c_edat)
+  alt_samp <- !is.null(N_genes)
+  
+  if (alt_samp) {
+    if(N_genes > length(genes)) { 
+      stop(paste("N_genes value", N_genes, "is greater than the", 
+                 length(genes), "number of genes in ExpressionSet object")) }
+  }
+  if (mean_correct) 
+  {
+    g_sbst <- if (alt_samp) sample(seq_along(genes), N_genes) else seq_along(genes)
+    
+    r_m <- c_edat[iter$samples_r, g_sbst]
     t_m <- c_edat[iter$samples_t, g_sbst]
-
-	  bg_r_cv <- r_m %>%
-	      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func,...)
-	  bg_t_cv <- t_m %>%
-	      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func,...)
-
+    
+    bg_r_cv <- r_m %>%
+      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func,...)
+    bg_t_cv <- t_m %>%
+      lower_tri_erase_mods_cor(mods=mods, corr_func=corr_func,...)
+    
     iter$bg_r <- bg_r_cv %>%
-        square %>%
-        mean
+      square %>%
+      mean
     iter$bg_t <- bg_t_cv %>%
-        square %>%
-        mean
-
-      # Calculate shrinking factors
+      square %>%
+      mean
+    
+    ## Calculate shrinking factors
     sh_vec <- get_shrink(bg_r_cv, bg_t_cv, iter$bg_r, iter$bg_t)
     iter$sh_r <- sh_vec[1]
     iter$sh_t <- sh_vec[2]
-
-    } else {
-        iter$bg_r <- 0
-        iter$bg_t <- 0
-        iter$sh_r <- 1
-        iter$sh_t <- 1
-    }
-
-    return(iter)
+  } 
+  else {
+    iter$bg_r <- 0
+    iter$bg_t <- 0
+    iter$sh_r <- 1
+    iter$sh_t <- 1
+  }
+  return(iter)
 }
-
+#' @title Compute Differential Connectivity
 #' @keywords internal
-do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, corr_func,...) {
-
+do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, corr_func,...) 
+{
     r_edat <- c_edat[iter_input$samples_r,]
     t_edat <- c_edat[iter_input$samples_t,]
 
@@ -90,7 +92,6 @@ do_differential_connectivity <- function(iter_input, c_edat, mods, mdc_type, cor
                                           corr_func=corr_func,
                                           ...)
     })
-
     iter_output <- list(mods_mdc)
     return(iter_output)
 }

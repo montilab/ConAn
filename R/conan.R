@@ -12,6 +12,7 @@
 #' @param iter_bg Number of iterations used when calculating background (only used for non-NULL N_genes values
 #' @param cores Number of cores available for parallelization
 #' @param mdc_type Method for calculating difference in connectivity can be either c("fraction", "difference")
+#' @plotting Generate plots of connectivity and resampling distributions (see report function)
 #' @param FUN Function for calculating correlation
 #'
 #' @return A list of statistics and plots resulting from the analysis
@@ -127,8 +128,8 @@ conan <- function(
 	{
 	  cat("Calculating background connectivity...\n")
 	  
-	  cv_r_bg <- list()
-	  cv_t_bg <- list()
+	  cv_r_bg <- vector(mode="list",length(iter_bg))
+	  cv_t_bg <- vector(mode="list",length(iter_bg))
 	  for (i in seq_len(iter_bg))
 	  {
 	    ## index of genes to be included in this iteration
@@ -138,10 +139,12 @@ conan <- function(
 	    t_m <- t_edat[,g_sbst]
 	    
 	    ## Background connectivity vector
-	    cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list, corr_func=FUN,...)))
+	    cv_r_bg[[i]] <- lower_tri_erase_mods_cor(r_m, mods=mod_list, corr_func=FUN,...)
+	    #cv_r_bg <- append(cv_r_bg, list(lower_tri_erase_mods_cor(r_m, mods=mod_list, corr_func=FUN,...)))
 	    
 	    ## Background connectivity vector
-	    cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list, corr_func=FUN,...)))
+	    cv_t_bg[[i]] <- lower_tri_erase_mods_cor(t_m, mods=mod_list, corr_func=FUN,...)
+	    #cv_t_bg <- append(cv_t_bg, list(lower_tri_erase_mods_cor(t_m, mods=mod_list, corr_func=FUN,...)))
 	  }
 	  ## Background module connectivity
 	  mc_r_bg <- mean(unlist(cv_r_bg)^2)
@@ -155,7 +158,6 @@ conan <- function(
 	  ## Background shrinking factors
 	  sh_r_bg <- sh_vec[1]
 	  sh_t_bg <- sh_vec[2]
-	  
 	  
 	  ## Storage for background statistics
 	  output$bg <- list(cv_r_bg=cv_r_bg,
@@ -218,8 +220,8 @@ conan <- function(
 	  ## Test module connectivity for each module
 	  mods_mc_t = unlist(do.call(rbind, mods_mcs)[,'mc_t']),
 	  ## Adjusted module differential connectivity for each module
-	  mods_mdc_adj = unlist(mods_mdc_adj))
-	
+	  mods_mdc_adj = unlist(mods_mdc_adj)
+	)
 	## ------------------------------------------
 	##  Permutation-based Significance Testing
 	## ------------------------------------------
